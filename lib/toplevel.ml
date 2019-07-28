@@ -17,32 +17,38 @@ let with_workflow w ~f =
     |> f
   with Failure msg as e -> print_endline msg ; raise e
 
+let with_pworkflow w ~f = with_workflow (Workflow.eval_path w) ~f
+
 let eval w =
   with_workflow w ~f:Fn.id
 
 let path w =
-  with_workflow (Workflow.eval_path w) ~f:(fun x -> x)
+  with_pworkflow w ~f:Fn.id
 
-let file w =
-  Sys.command (sprintf "file %s" (path w))
-  |> ignore
+let sh fmt =
+  Printf.ksprintf (fun s -> ignore (Sys.command s)) fmt
 
-let ls w =
-  Sys.command (sprintf "ls %s" (path w))
-  |> ignore
+let evince w =
+  with_pworkflow w ~f:(sh "evince %s")
 
-let less (w : #text_file pworkflow) =
-  Sys.command (sprintf "less %s" (path w))
-  |> ignore
+let file (w : _ pworkflow) =
+  with_pworkflow w ~f:(sh "file %s")
 
 let firefox w =
-  Sys.command (sprintf "firefox %s" (path w))
-  |> ignore
+  with_pworkflow w ~f:(sh "firefox --no-remote %s")
+
+let less w =
+  with_pworkflow w ~f:(sh "less %s")
+
+let ls w =
+  with_pworkflow w ~f:(sh "ls %s")
+
+let rm w =
+  with_pworkflow w ~f:(sh "rm %s")
 
 let seaview w =
   Sys.command (sprintf "seaview %s" (path w))
   |> ignore
 
-let evince (w : pdf pworkflow) =
-  Sys.command (sprintf "evince %s" (path w))
-  |> ignore
+let wc (w : #text_file pworkflow) =
+  with_pworkflow w ~f:(sh "wc %s")
