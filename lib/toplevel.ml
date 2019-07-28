@@ -23,7 +23,15 @@ let eval w =
 let path w =
   with_workflow (Workflow.eval_path w) ~f:(fun x -> x)
 
-let less w =
+let file w =
+  Sys.command (sprintf "file %s" (path w))
+  |> ignore
+
+let ls w =
+  Sys.command (sprintf "ls %s" (path w))
+  |> ignore
+
+let less (w : #text_file pworkflow) =
   Sys.command (sprintf "less %s" (path w))
   |> ignore
 
@@ -35,12 +43,6 @@ let seaview w =
   Sys.command (sprintf "seaview %s" (path w))
   |> ignore
 
-let evince w =
+let evince (w : pdf pworkflow) =
   Sys.command (sprintf "evince %s" (path w))
   |> ignore
-
-let workflow_of_template t =
-  let open Bistro.Shell_dsl in
-  Workflow.shell [
-    cmd "cp" [ file_dump t ; dest ]
-  ]
