@@ -1,0 +1,5 @@
+(library
+  (name biotope_light)
+  (public_name biotope.light)
+  (libraries biocaml.unix biotope core_kernel gzt)
+  (preprocess (pps bistro.ppx ppx_jane)))
