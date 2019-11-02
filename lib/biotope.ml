@@ -1,9 +1,6 @@
-open Printf
-open Base
-open Base.Poly
+open Core_kernel
 open Bistro
 open Bistro.Shell_dsl
-open Stdio
 
 module Bed = struct
   let keep ~n bed =
@@ -2969,4 +2966,113 @@ path = /usr/bin/
         ]
       )
     ]
+end
+
+module Ncbi_genome = struct
+  let assembly_summary =
+    Bistro_unix.wget Gzt.Ncbi_genome.refseq_assembly_summary_url
+
+  let fetch_assembly ~genome_id ~assembly_id =
+    let genome_number =
+      match String.lsplit2 ~on:'_' genome_id with
+      | Some ("GCF", x) when String.length x >= 9 -> x
+      | _ -> invalid_argf "fetch_assembly: invalid genome identifier %s" genome_id ()
+    in
+    let f pos = String.sub genome_number ~pos ~len:3 in
+    let url =
+      sprintf
+        "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/%s/%s/%s/%s_%s/%s_%s_genomic.fna.gz"
+        (f 0) (f 3) (f 6) genome_id assembly_id genome_id assembly_id
+    in
+    Bistro_unix.wget url
+end
+
+module Jaspar = struct
+  class type jaspar_db = object
+    inherit directory
+    method contents : [`jaspar_matrix] list
+  end
+
+  let core_vertebrates_non_redundant =
+    Bistro_unix.wget
+      ~user_agent:{|"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.22 (KHTML, like Gecko) Ubuntu Chromium/25.0.1364.160 Chrome/25.0.1364.160 Safari/537.22"|}
+      "http://jaspar.genereg.net/download/CORE/JASPAR2018_CORE_vertebrates_non-redundant_pfms_jaspar.zip"
+    |> Bistro_unix.unzip
+
+  let%workflow motif_list db =
+    let db_dir = [%path db] in
+    let motifs =
+      Sys.readdir db_dir
+      |> Array.to_list
+      |> List.filter ~f:(function
+          | "." | ".." -> false
+          | _ -> true
+        )
+      |> List.map ~f:(fun fn -> Gzt.Jaspar.of_file (Filename.concat db_dir fn))
+      |> Result.all
+    in
+    match motifs with
+    | Ok xs -> xs
+    | Error msg -> failwith msg
+end
+
+module Cisbp = struct
+  let fetch_pwm_archive : directory pworkflow =
+    Bistro_unix.wget Gzt.Cisbp.pwm_archive_url
+    |> Bistro_unix.unzip
+    |> Fn.flip Workflow.select ["pwms"]
+
+  let fetch_tf_information : tsv pworkflow =
+    Bistro_unix.wget Gzt.Cisbp.tf_information_archive_url
+    |> Bistro_unix.unzip
+    |> Fn.flip Workflow.select ["TF_Information_all_motifs.txt"]
+
+  let%workflow annotated_motifs =
+    let motifs =
+      Gzt.Cisbp.Motif.read_all_in_dir [%path fetch_pwm_archive]
+    in
+    let motif_info =
+      Gzt.Cisbp.TF_information.from_file [%path fetch_tf_information]
+      |> List.filter_map ~f:(fun mi ->
+          Option.map mi.motif_id ~f:(fun id -> id, mi)
+        )
+      |> String.Map.of_alist_multi
+    in
+    List.map motifs ~f:(fun (label, motif) ->
+        let id = Filename.chop_extension label in
+        motif, Option.value ~default:[] (String.Map.find motif_info id)
+      )
+end
+
+
+module Comparative_genomics = struct
+  let select_refseq_genomes ~pattern = [%workflow
+    let re = Re.Glob.glob [%param pattern] |> Re.compile in
+    Gzt.Ncbi_genome.Assembly_summary.csv_load [%path Ncbi_genome.assembly_summary]
+    |> List.filter ~f:(fun it -> Re.execp re it.organism_name)
+    (* |> List.map ~f:(fun it ->
+     *
+     *   ) *)
+  ]
+
+  let url_of_summary x =
+    [%workflow
+      [%eval x].Gzt.Ncbi_genome.Assembly_summary.assembly_accession]
+
+  let fetch_refseq_genomes ~pattern =
+    select_refseq_genomes ~pattern
+    |> Workflow.spawn ~f:url_of_summary
+    |> Workflow.spawn ~f:Bistro_unix.wget_dyn
+end
+
+module Toplevel_eval(P : sig
+    val np : int
+    val mem : int
+  end)() =
+struct
+  include Bistro_utils.Toplevel_eval.Make(P)()
+
+  let seaview w =
+    Sys.command (sprintf "seaview %s" (path w))
+    |> ignore
 end

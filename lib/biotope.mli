@@ -159,6 +159,15 @@ module Ensembl : sig
   val cdna : release:int -> species:species -> fasta gz pworkflow
 end
 
+module Ncbi_genome : sig
+  val assembly_summary : tsv pworkflow
+
+  val fetch_assembly :
+    genome_id:string ->
+    assembly_id:string ->
+    fasta gz pworkflow
+end
+
 (** {3 NGS utilities} *)
 
 module Bedtools : sig
@@ -462,7 +471,7 @@ module Deeptools : sig
     ?kmeans:int ->
     ?hclust:int ->
     ?averageType:[`mean | `median | `min | `max | `std | `sum] ->
-    ?plotHeight:float -> (** in cm *)
+    ?plotHeight:float ->
     ?plotWidth:float ->
     ?plotType:[`lines | `fill | `se | `std | `overlapped_lines | `heatmap] ->
     ?colors:string list ->
@@ -481,6 +490,7 @@ module Deeptools : sig
     'a img_format ->
     deeptools_matrix gz pworkflow ->
     'a pworkflow
+  (** [plotHeight] and [plotWidth] are given in cm *)
 
   val plotEnrichment :
     ?labels:string list ->
@@ -1279,6 +1289,26 @@ module Meme_suite : sig
     directory pworkflow
 end
 
+module Jaspar : sig
+  class type jaspar_db = object
+    inherit directory
+    method contents : [`jaspar_matrix] list
+  end
+
+  val core_vertebrates_non_redundant : jaspar_db pworkflow
+
+  val motif_list : jaspar_db pworkflow -> Gzt.Jaspar.matrix list workflow
+end
+
+module Cisbp : sig
+  val fetch_pwm_archive : directory pworkflow
+
+  val fetch_tf_information : tsv pworkflow
+
+  val annotated_motifs : (Gzt.Cisbp.Motif.t * Gzt.Cisbp.TF_information.item list) list workflow
+end
+
+
 module Prokka : sig
   val run :
     ?prefix:string ->
@@ -1391,4 +1421,23 @@ module Srst2 : sig
     ?threads:int ->
     #fastq pworkflow list ->
     directory pworkflow
+end
+
+module Comparative_genomics : sig
+  val fetch_refseq_genomes :
+    pattern:string ->
+    fasta path list workflow
+end
+
+module Toplevel_eval(P : sig val np : int val mem : int end)() : sig
+  val eval : 'a workflow -> 'a
+  val path : _ pworkflow -> string
+  val file : _ pworkflow -> unit
+  val ls : _ pworkflow -> unit
+  val less : #text_file pworkflow -> unit
+  val firefox : _ pworkflow -> unit
+  val evince : pdf pworkflow -> unit
+  val wc : #text_file pworkflow -> unit
+  val rm : _ pworkflow -> unit
+  val seaview : fasta pworkflow -> unit
 end
