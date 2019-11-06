@@ -27,8 +27,37 @@ module File = struct
   ]
 end
 
+module Svg = struct
+  type t = svg pworkflow
+end
+
 module Html = struct
-  type t = html pworkflow
+  type elt =
+    | H1 of string
+    | Text of string
+    | Svg of svg pworkflow
+
+  type t =
+    | Workflow of html pworkflow
+    | Elements of string * elt list
+
+  let make ~title xs = Elements (title, xs)
+
+  let h1 s = H1 s
+  let text s = Text s
+  let svg x = Svg x
+
+  let render = function
+    | Workflow w -> w
+    | Elements (title, elts) ->
+      let open Bistro_utils.Html_report in
+      List.map elts ~f:(function
+          | H1 s -> section s
+          | Text s -> text s
+          | Svg x -> svg x
+        )
+      |> make ~title
+      |> render
 end
 
 module Markdown = struct
@@ -84,12 +113,12 @@ module Fastq = struct
     let summaries = match x with
       | Plain se_or_pe ->
         SE_or_PE.map se_or_pe ~f:fastq_stats
-        |> workflow_se_or_pe 
+        |> workflow_se_or_pe
       | Gziped se_or_pe ->
         SE_or_PE.map se_or_pe ~f:(fun fq_gz ->
             (fastq_stats (Bistro_unix.gunzip fq_gz))
           )
-        |> workflow_se_or_pe 
+        |> workflow_se_or_pe
     in
     [%workflow
       match ([%eval summaries] : Gzt.Fastq.Stats.t SE_or_PE.t) with
@@ -122,10 +151,11 @@ module FastQC = struct
     | Gziped x ->
       SE_or_PE.map x ~f:(fun x -> FastQC.run (Bistro_unix.gunzip x))
   let html_report (x : t) = match x with
-    | Single_end d -> FastQC.html_report d, None
+    | Single_end d ->
+      Html.Workflow (FastQC.html_report d), None
     | Paired_end (r1, r2) ->
-      FastQC.html_report r1,
-      Some (FastQC.html_report r2)
+      Html.Workflow (FastQC.html_report r1),
+      Some (Html.Workflow (FastQC.html_report r2))
 end
 
 let np = ref 1
@@ -151,4 +181,4 @@ let firefox w =
   E.firefox w
 
 let eval_text = eval
-let browse_html x = firefox x
+let browse_html x = firefox (Html.render x)

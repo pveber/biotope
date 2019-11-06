@@ -8,8 +8,20 @@ module File : sig
   val summary : t -> Text.t
 end
 
+module Svg : sig
+  type t
+end
+
 module Html : sig
   type t
+  type elt
+  val make :
+    title:string ->
+    elt list ->
+    t
+  val h1 : string -> elt
+  val text : string -> elt
+  val svg : Svg.t -> elt
 end
 
 module Markdown : sig
