@@ -206,7 +206,7 @@ module Samtools = struct
   let sort ?on:order bam =
     Workflow.shell ~descr:"samtools.sort" [
       samtools "sort" [
-        option (fun o -> flag string "-n" (o = `name)) order ;
+        option (fun o -> flag string "-n" Poly.(o = `name)) order ;
         dep bam ;
         opt "-o" Fn.id dest ;
       ] ;
@@ -305,7 +305,9 @@ module Bowtie2 = struct
       | `sensitive -> "--sensitive"
       | `very_sensitive -> "--very-sensitive"
     in
-    if mode = `local then flag ^ "-local" else flag
+    match mode with
+    | `local -> flag ^ "-local"
+    | _ -> flag
 
   let flag_of_mode = function
     | `end_to_end -> "--end-to-end"
@@ -1101,7 +1103,7 @@ main <- function(outdir, factor_names, sample_files, conditions) {
     let rec aux seen = function
       | [] -> []
       | h :: t ->
-        if List.mem seen h ~equal:( = ) then
+        if List.mem seen h ~equal:Poly.( = ) then
           aux seen t
         else
           h :: aux (h :: seen) t
@@ -3178,6 +3180,6 @@ struct
   include Bistro_utils.Toplevel_eval.Make(P)()
 
   let seaview w =
-    Sys.command (sprintf "seaview %s" (path w))
+    (Sys.command (sprintf "seaview %s" (path w)) : int)
     |> ignore
 end
