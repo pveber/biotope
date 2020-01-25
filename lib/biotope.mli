@@ -18,11 +18,10 @@ module Bed : sig
 end
 
 module Fastq : sig
-  type _ format =
-    | Sanger  : sanger_fastq format
-    | Solexa  : solexa_fastq format
-    | Phred64 : phred64_fastq format
-  (* val to_sanger : 'a format -> < fastq ; phred_encoding : 'a ; .. > pworkflow -> sanger_fastq pworkflow *)
+  type format =
+    | Sanger
+    | Solexa
+    | Phred64
 
   val concat : (#fastq as 'a) pworkflow list -> 'a pworkflow
   val head : int -> (#fastq as 'a) pworkflow -> 'a pworkflow
@@ -720,11 +719,11 @@ module Bowtie : sig
 
   val bowtie :
     ?l:int -> ?e:int -> ?m:int ->
-    ?fastq_format:'a Fastq.format ->
+    ?fastq_format:Fastq.format ->
     ?n:int -> ?v:int ->
     ?maxins:int ->
     index pworkflow ->
-    'a pworkflow list SE_or_PE.t ->
+    #fastq pworkflow list SE_or_PE.t ->
     sam pworkflow
 end
 
@@ -776,9 +775,9 @@ module Bowtie2 : sig
     ?no_overlap:bool ->
     ?no_unal:bool ->
     ?seed:int ->
-    ?fastq_format:'a Fastq.format ->
+    ?fastq_format:Fastq.format ->
     index pworkflow ->
-    'a pworkflow list SE_or_PE.t ->
+    #fastq pworkflow list SE_or_PE.t ->
     sam pworkflow
 end
 
@@ -830,7 +829,7 @@ module Hisat2 : sig
     ?qupto:int ->
     ?trim5:int ->
     ?trim3:int ->
-    ?fastq_format:'a Fastq.format ->
+    ?fastq_format:Fastq.format ->
     ?k:int ->
     ?minins:int ->
     ?maxins:int ->
@@ -839,7 +838,7 @@ module Hisat2 : sig
     ?no_discordant:bool ->
     ?seed:int ->
     [`hisat2_index] dworkflow ->
-    sanger_fastq pworkflow list SE_or_PE.t ->
+    #fastq pworkflow list SE_or_PE.t ->
     sam pworkflow
 end
 
