@@ -1340,7 +1340,16 @@ module Cisbp : sig
 
   val fetch_tf_information : tsv pworkflow
 
-  val annotated_motifs : (Gzt.Cisbp.Motif.t * Gzt.Cisbp.TF_information.item list) list workflow
+  type annotated_motif = {
+    id : string ;
+    tf_name : string ;
+    pwm : Gzt.Pwm.t ;
+    rc_pwm : Gzt.Pwm.t ;
+    threshold : float ;
+    infos : Gzt.Cisbp.TF_information.item list ;
+  }
+
+  val annotated_motifs : annotated_motif list workflow
 end
 
 
