@@ -29,6 +29,10 @@ module SE_or_PE = struct
   let map x ~f = match x with
     | Single_end x -> Single_end (f x)
     | Paired_end (x, y) -> Paired_end (f x, f y)
+
+  let fst = function
+    | Single_end x
+    | Paired_end (x, _) -> x
 end
 
 module Fastq = struct

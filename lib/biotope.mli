@@ -6,6 +6,7 @@ module SE_or_PE : sig
     | Paired_end of 'a * 'a
 
   val map : 'a t -> f:('a -> 'b) -> 'b t
+  val fst : 'a t -> 'a
 end
 
 (** {3 File_formats} *)
