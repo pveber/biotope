@@ -9,5 +9,5 @@ val alignReads :
   ?outSAMstrandField:[`None | `intronMotif] ->
   ?alignIntronMax:int ->
   [`star_index] dworkflow ->
-  sanger_fastq pworkflow SE_or_PE.t ->
+  fastq pworkflow SE_or_PE.t ->
   bam pworkflow

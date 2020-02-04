@@ -3,7 +3,7 @@ open Bistro
 val spades :
   ?single_cell:bool ->
   ?iontorrent:bool ->
-  ?pe:sanger_fastq pworkflow list * sanger_fastq pworkflow list ->
+  ?pe:fastq pworkflow list * fastq pworkflow list ->
   ?threads:int ->
   ?memory:int ->
   unit ->

@@ -25,8 +25,8 @@ val quant :
   ?fragment_length:float ->
   ?sd:float ->
   index pworkflow ->
-  fq1:[`fq of sanger_fastq pworkflow | `fq_gz of sanger_fastq gz pworkflow] ->
-  ?fq2:[`fq of sanger_fastq pworkflow | `fq_gz of sanger_fastq gz pworkflow] ->
+  fq1:[`fq of fastq pworkflow | `fq_gz of fastq gz pworkflow] ->
+  ?fq2:[`fq of fastq pworkflow | `fq_gz of fastq gz pworkflow] ->
   unit ->
   [`kallisto_output] dworkflow
 

@@ -2,9 +2,9 @@ open Bistro
 
 val fq2fa :
   ?filter:bool ->
-  [ `Se of sanger_fastq pworkflow
-  | `Pe_merge of sanger_fastq pworkflow * sanger_fastq pworkflow
-  | `Pe_paired of sanger_fastq pworkflow ] ->
+  [ `Se of fastq pworkflow
+  | `Pe_merge of fastq pworkflow * fastq pworkflow
+  | `Pe_paired of fastq pworkflow ] ->
   fasta pworkflow
 
 val idba_ud : ?mem_spec:int -> fasta pworkflow -> [`idba] dworkflow
