@@ -1,0 +1,6 @@
+(library
+  (name biotope_examples)
+  (public_name biotope.examples)
+  (libraries biotope bistro.utils)
+  (preprocess (pps bistro.ppx ppx_enumerate ppx_deriving.std))
+  (optional))
