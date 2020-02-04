@@ -8,7 +8,7 @@ module Data = struct
     | `ES_WT_ChIP_Sox2_Chen2008
     | `ES_WT_ChIP_Essrb_Chen2008
   ]
-  [@@deriving enumerate]
+  [@@deriving show,enumerate]
 
   let string_of_sample = function
     | `ES_WT_ChIP_Nanog_Chen2008 -> "ES_WT_ChIP_Nanog_Chen2008"
@@ -34,7 +34,15 @@ module Data = struct
     | `ES_WT_ChIP_Sox2_Chen2008 -> ["SRR002023";"SRR002024";"SRR002025";"SRR002026"]
     | `ES_WT_ChIP_Essrb_Chen2008 -> ["SRR001992";"SRR001993";"SRR001994";"SRR001995"]
 
-  let source x = Fastq_dataset.SRA_dataset { srr_ids = srr_ids x ; library_type = `single_end }
+  let source x = Fastq_sample.SRA_dataset { srr_ids = srr_ids x ; library_type = `single_end }
+
+  let to_string x = show x
+
+  let reference_genome _ = Dnaseq_with_reference_genome.Ucsc_gb `mm10
 end
 
-module Fastq_dataset = Fastq_dataset.Make(Data)
+module Fastq_dataset = Fastq_sample.Make(Data)
+module Dnaseq = Dnaseq_with_reference_genome.Make(struct
+    include Data
+    include Fastq_dataset
+  end)
