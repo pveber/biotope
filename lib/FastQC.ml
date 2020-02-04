@@ -8,11 +8,16 @@ class type report = object
   method contents : [`fastQC_report]
 end
 
-let run fq = Workflow.shell ~descr:"fastQC" [
+module Cmd = struct
+  let fastqc x = [
     mkdir_p dest ;
     cmd "fastqc" ~img [
       seq ~sep:"" [ string "--outdir=" ; dest ] ;
-      dep fq ;
+      (
+        match x with
+        | `fq fq -> dep fq
+        | `fq_gz fq_gz -> gzdep fq_gz
+      )
     ] ;
     and_list [
       cd dest ;
@@ -20,6 +25,11 @@ let run fq = Workflow.shell ~descr:"fastQC" [
       cmd "mv" [ string "*_fastqc/*" ; string "." ]
     ] ;
   ]
+end
+
+let fastqc fq = Workflow.shell ~descr:"fastQC" (Cmd.fastqc (`fq fq))
+
+let fastqc_gz fq_gz = Workflow.shell ~descr:"fastQC" (Cmd.fastqc (`fq_gz fq_gz))
 
 let html_report x = Workflow.select x ["fastqc_report.html"]
 
