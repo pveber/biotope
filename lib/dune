@@ -1,7 +1,7 @@
 (library
   (name biotope)
   (public_name biotope)
-  (libraries bistro.bioinfo bistro.utils core_kernel gzt)
+  (libraries biocaml.ez bistro.bioinfo bistro.utils core_kernel gzt gzt.pipes)
   (preprocess (pps bistro.ppx ppx_jane))
   (flags (:standard -short-paths)))
 
