@@ -39,3 +39,7 @@ val faidx :
 
 val fasta_of_indexed_fasta :
   indexed_fasta pworkflow -> fasta pworkflow
+
+val flagstats :
+  < file ; format : [< `bam | `sam] ; .. > pworkflow ->
+  text_file pworkflow

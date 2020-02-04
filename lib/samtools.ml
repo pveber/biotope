@@ -10,8 +10,8 @@ let sam = Sam
 
 let img = [ docker_image ~account:"pveber" ~name:"samtools" ~tag:"1.3.1" () ]
 
-let samtools subcmd args =
-  cmd "samtools" ~img (string subcmd :: args)
+let samtools subcmd ?stdout args =
+  cmd "samtools" ~img ?stdout (string subcmd :: args)
 
 let sam_of_bam bam =
   Workflow.shell ~descr:"samtools.sam_of_bam" [
@@ -101,3 +101,10 @@ let faidx fa =
   ]
 
 let fasta_of_indexed_fasta dir = Workflow.select dir ["sequences.fa"]
+
+let flagstats sam_or_bam =
+  Workflow.shell ~descr:"samtools.flagstats" [
+    samtools "flagstats" ~stdout:dest [
+      dep sam_or_bam ;
+    ]
+  ]
