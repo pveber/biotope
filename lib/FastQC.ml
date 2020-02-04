@@ -16,7 +16,7 @@ module Cmd = struct
       (
         match x with
         | `fq fq -> dep fq
-        | `fq_gz fq_gz -> gzdep fq_gz
+        | `fq_gz fq_gz -> Bistro_unix.Cmd.gzdep fq_gz
       )
     ] ;
     and_list [

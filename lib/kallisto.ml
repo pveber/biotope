@@ -27,7 +27,7 @@ let index fas =
   ]
 
 let fq_input = function
-  | `fq_gz x -> Bistro_unix.Cmd.psgunzip x
+  | `fq_gz x -> Bistro_unix.Cmd.gzdep x
   | `fq x -> dep x
 
 let quant ?bias ?bootstrap_samples ?fr_stranded ?rf_stranded ?threads ?fragment_length ?sd idx ~fq1 ?fq2 () =
