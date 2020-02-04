@@ -16,7 +16,7 @@ val fastq_screen :
   ?threads:int ->
   ?top: [ `top1 of int | `top2 of int * int ] ->
   ?lightweight:bool ->
-  #fastq pworkflow ->
+  Fastq_sample.t ->
   (string * fasta pworkflow) list ->
   output pworkflow
 

@@ -48,7 +48,7 @@ val bowtie2 :
   ?seed:int ->
   ?fastq_format:Fastq.format ->
   index pworkflow ->
-  #fastq pworkflow list SE_or_PE.t ->
+  Fastq_sample.t ->
   sam pworkflow
 
 val qual_option : Fastq.format -> string

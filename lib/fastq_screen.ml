@@ -40,7 +40,13 @@ let configuration genomes =
   seq ~sep:"\n" database_lines
 
 let fastq_screen ?bowtie2_opts ?filter ?illumina ?nohits ?pass ?subset
-    ?tag ?(threads = 1) ?top ?(lightweight = true) fq genomes =
+    ?tag ?(threads = 1) ?top ?(lightweight = true) fqs genomes =
+  let args =
+    match Fastq_sample.dep fqs with
+    | SE_or_PE.Single_end fqs -> seq ~sep:" " fqs
+    | Paired_end (fqs1, fqs2) ->
+      seq [ seq ~sep:" " fqs1 ; string " " ; seq ~sep:" " fqs2 ]
+  in
   Workflow.shell ~descr:"fastq_screen" ~np:threads ~mem:(Workflow.int (3 * 1024)) [
     mkdir_p dest ;
     cmd "fastq_screen" ~img [
@@ -54,7 +60,7 @@ let fastq_screen ?bowtie2_opts ?filter ?illumina ?nohits ?pass ?subset
       option (flag string "--tag") tag ;
       opt "--threads" Fn.id np ;
       option (opt "--top" top_expr) top ;
-      dep fq ;
+      args ;
       string "--conf" ; file_dump (configuration genomes) ;
       opt "--outdir" Fn.id dest ;
     ] ;

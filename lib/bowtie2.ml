@@ -65,16 +65,17 @@ let bowtie2
     ?a ?k ?_D ?_R ?minins ?maxins ?orientation
     ?no_mixed ?no_discordant ?dovetail ?no_contain ?no_overlap
     ?no_unal ?seed
-    ?fastq_format index fqs =
+    ?fastq_format index (fqs : Fastq_sample.t) =
 
-  let args = match fqs with
+  let args =
+    match Fastq_sample.dep fqs with
     | SE_or_PE.Single_end fqs ->
-      opt "-U" (list dep ~sep:",") fqs
+      opt "-U" (seq ~sep:",") fqs
     | Paired_end (fqs1, fqs2) ->
       seq [
-        opt "-1" (list dep ~sep:",") fqs1 ;
+        opt "-1" (seq ~sep:",") fqs1 ;
         string " " ;
-        opt "-2" (list dep ~sep:",") fqs2
+        opt "-2" (seq ~sep:",") fqs2
       ]
   in
   Workflow.shell ~descr:"bowtie2" ~mem:(Workflow.int (3 * 1024)) ~np:8 [
