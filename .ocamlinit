@@ -1,1 +1,9 @@
 open Biotope
+
+module Params = struct
+  let np = 4
+  let mem = 8
+end
+
+module T = Toplevel_eval.Make(Params)()
+open T
