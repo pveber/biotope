@@ -1,7 +1,7 @@
 open Bistro
 open Bistro.Shell_dsl
 
-let img = [ docker_image ~account:"pveber" ~name:"fastqc" ~tag:"0.11.5" () ]
+let img = [ docker_image ~account:"pveber" ~name:"fastqc" ~tag:"0.11.8" () ]
 
 class type report = object
   inherit directory
