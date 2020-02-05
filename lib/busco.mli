@@ -56,5 +56,5 @@ val busco :
   threads:int ->
   mode:[`genome | `transcriptome | `proteins] ->
   db:db ->
-  fasta pworkflow ->
-  directory pworkflow
+  fasta file ->
+  [`busco] directory

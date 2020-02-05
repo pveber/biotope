@@ -5,15 +5,10 @@ type 'a sample = {
   tissue : string ;
   factor : string ;
   replicate : string ;
-  bam : indexed_bam pworkflow ;
-  peaks : (#bed3 as 'a) pworkflow ;
+  bam : [`indexed_bam] directory ;
+  peaks : (#bed3 as 'a) file ;
 }
 
-class type output = object
-  inherit directory
-  method contents : [`ChIPQC]
-end
-
-val run : 'a sample list -> output pworkflow
+val run : 'a sample list -> [`ChIPQC] directory
 (** Beware: doesn't work with only one sample (see
     https://support.bioconductor.org/p/84754/) *)

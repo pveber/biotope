@@ -1,11 +1,11 @@
 open Bistro
 
 val run_gen_cmd :
-  ?mlst_db:fasta pworkflow ->
+  ?mlst_db:fasta file ->
   ?mlst_delimiter:string ->
-  ?mlst_definitions:fasta pworkflow ->
+  ?mlst_definitions:fasta file ->
   ?mlst_max_mismatch:int ->
-  ?gene_db:fasta pworkflow list ->
+  ?gene_db:fasta file list ->
   ?no_gene_details:bool ->
   ?gene_max_mismatch:int ->
   ?min_coverage:int ->
@@ -27,11 +27,11 @@ val run_gen_cmd :
 
 
 val run_se :
-  ?mlst_db:fasta pworkflow ->
+  ?mlst_db:fasta file ->
   ?mlst_delimiter:string ->
-  ?mlst_definitions:fasta pworkflow ->
+  ?mlst_definitions:fasta file ->
   ?mlst_max_mismatch:int ->
-  ?gene_db:fasta pworkflow list ->
+  ?gene_db:fasta file list ->
   ?no_gene_details:bool ->
   ?gene_max_mismatch:int ->
   ?min_coverage:int ->
@@ -48,16 +48,16 @@ val run_se :
   ?report_new_consensus:bool ->
   ?report_all_consensus:bool ->
   ?threads:int ->
-  #fastq pworkflow list ->
-  directory pworkflow
+  #fastq file list ->
+  [`srst2] directory
 
 
 val run_pe :
-  ?mlst_db:fasta pworkflow ->
+  ?mlst_db:fasta file ->
   ?mlst_delimiter:string ->
-  ?mlst_definitions:fasta pworkflow ->
+  ?mlst_definitions:fasta file ->
   ?mlst_max_mismatch:int ->
-  ?gene_db:fasta pworkflow list ->
+  ?gene_db:fasta file list ->
   ?no_gene_details:bool ->
   ?gene_max_mismatch:int ->
   ?min_coverage:int ->
@@ -74,5 +74,5 @@ val run_pe :
   ?report_new_consensus:bool ->
   ?report_all_consensus:bool ->
   ?threads:int ->
-  #fastq pworkflow list ->
-  directory pworkflow
+  #fastq file list ->
+  [`srst2] directory

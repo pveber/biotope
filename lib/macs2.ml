@@ -21,21 +21,6 @@ type _ format =
   | Sam
   | Bam
 
-class type output = object
-  inherit directory
-  method contents : [`macs2]
-end
-
-class type narrow_output = object
-  inherit output
-  method peak_type : [`narrow]
-end
-
-class type broad_output = object
-  inherit output
-  method peak_type : [`broad]
-end
-
 let sam = Sam
 let bam = Bam
 

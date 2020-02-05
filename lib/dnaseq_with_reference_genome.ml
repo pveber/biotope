@@ -3,7 +3,7 @@ open Bistro
 
 type reference_genome =
   | Ucsc_gb of Ucsc_gb.genome
-  | Fasta of { name : string ; sequence : fasta pworkflow }
+  | Fasta of { name : string ; sequence : fasta file }
 
 module type Sample = sig
   type t

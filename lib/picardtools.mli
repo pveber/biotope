@@ -4,13 +4,13 @@ val img : Shell_dsl.container_image list
 
 val markduplicates :
   ?remove_duplicates:bool ->
-  [`indexed_bam] dworkflow ->
-  [`picard_markduplicates] dworkflow
+  [`indexed_bam] directory ->
+  [`picard_markduplicates] directory
 
 val reads :
-  [`picard_markduplicates] dworkflow ->
-  bam pworkflow
+  [`picard_markduplicates] directory ->
+  bam file
 
 val sort_bam_by_name :
-  bam pworkflow ->
-  bam pworkflow
+  bam file ->
+  bam file

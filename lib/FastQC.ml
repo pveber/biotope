@@ -1,12 +1,9 @@
 open Bistro
 open Bistro.Shell_dsl
 
-let img = [ docker_image ~account:"pveber" ~name:"fastqc" ~tag:"0.11.8" () ]
+type report = [`fastQC] directory
 
-class type report = object
-  inherit directory
-  method contents : [`fastQC_report]
-end
+let img = [ docker_image ~account:"pveber" ~name:"fastqc" ~tag:"0.11.8" () ]
 
 module Cmd = struct
   let fastqc x = [

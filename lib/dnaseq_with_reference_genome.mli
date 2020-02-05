@@ -2,7 +2,7 @@ open Bistro
 
 type reference_genome =
   | Ucsc_gb of Ucsc_gb.genome
-  | Fasta of { name : string ; sequence : fasta pworkflow }
+  | Fasta of { name : string ; sequence : fasta file }
 
 module type Sample = sig
   type t
@@ -13,25 +13,25 @@ module type Sample = sig
 end
 
 module Make(S : Sample) : sig
-  val mapped_reads : S.t -> sam pworkflow
-  val mapped_reads_indexed_bam : S.t -> indexed_bam pworkflow
-  val mapped_reads_bam : S.t -> bam pworkflow
-  val mapped_reads_nodup : S.t -> bam pworkflow
-  val mapped_reads_nodup_indexed : S.t -> indexed_bam pworkflow
-  val coverage : S.t -> Ucsc_gb.bigWig pworkflow
+  val mapped_reads : S.t -> sam file
+  val mapped_reads_indexed_bam : S.t -> [`indexed_bam] directory
+  val mapped_reads_bam : S.t -> bam file
+  val mapped_reads_nodup : S.t -> bam file
+  val mapped_reads_nodup_indexed : S.t -> [`indexed_bam] directory
+  val coverage : S.t -> Ucsc_gb.bigWig file
   val counts :
     no_dups:bool ->
     feature_type:string ->
     attribute_type:string ->
-    gff:gff pworkflow ->
+    gff:gff file ->
     S.t ->
-    [`featureCounts] dworkflow
+    [`featureCounts] directory
   val fastq_screen :
-    possible_contaminants:(string * fasta pworkflow) list ->
+    possible_contaminants:(string * fasta file) list ->
     S.t ->
-    html pworkflow
-  val bamstats : S.t -> text_file pworkflow
+    html file
+  val bamstats : S.t -> text file
   val bamstats' : S.t -> Biocaml_ez.Bamstats.t workflow
-  val chrstats : S.t -> text_file pworkflow
-  val alignment_summary : html pworkflow
+  val chrstats : S.t -> text file
+  val alignment_summary : html file
 end

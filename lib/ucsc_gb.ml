@@ -51,7 +51,7 @@ end
 
 class type wig = object
   method format : [`wig]
-  inherit text_file
+  inherit text
 end
 
 class type bigWig = object
@@ -59,15 +59,11 @@ class type bigWig = object
   inherit binary_file
 end
 
-class type chromosome_sequences = object
-  inherit directory
-  method contents : [`ucsc_chromosome_sequences]
-end
-
 let img = [ docker_image ~account:"pveber" ~name:"ucsc-kent" ~tag:"330" () ]
 
 
 (** {5 Dealing with genome sequences} *)
+type chromosome_sequences = [`ucsc_chromosome_sequences] directory
 
 let chromosome_sequence org chr =
   let org = string_of_genome org in
@@ -273,13 +269,10 @@ let bedToBigBed_failsafe org =
 
 module Lift_over = struct
   class type chain_file = object
-    inherit file
+    inherit regular_file_t
     method format : [`lift_over_chain_file]
   end
-  class type ['a] output = object
-    inherit directory
-    method format : [`ucsc_lift_over of 'a]
-  end
+  type 'a output = [`ucsc_lift_over of 'a] directory
 
   let chain_file ~org_from ~org_to =
     let org_from = string_of_genome org_from

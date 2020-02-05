@@ -1,20 +1,15 @@
 open Bistro
 
-class type output = object
-  inherit directory
-  method contents : [`tophat]
-end
-
 val tophat1 :
   ?color:bool ->
-  Bowtie.index pworkflow ->
-  #fastq pworkflow list SE_or_PE.t ->
-  output pworkflow
+  [`bowtie_index] directory ->
+  #fastq file list SE_or_PE.t ->
+  [`tophat] directory
 
 val tophat2 :
-  Bowtie2.index pworkflow ->
-  #fastq pworkflow list SE_or_PE.t ->
-  output pworkflow
+  [`bowtie2_index] directory ->
+  #fastq file list SE_or_PE.t ->
+  [`tophat] directory
 
-val accepted_hits : output pworkflow -> bam pworkflow
-val junctions : output pworkflow -> bed6 pworkflow
+val accepted_hits : [`tophat] directory -> bam file
+val junctions : [`tophat] directory -> bed6 file

@@ -24,7 +24,7 @@ module Data = struct
     | `ES_WT_ChIP_Sox2_Chen2008 -> "GSM288347/GSM288347_ES_Sox2.txt.gz"
     | `ES_WT_ChIP_Essrb_Chen2008 -> "GSM288355/GSM288355%5FES%5FEsrrb%2Etxt%2Egz"
 
-  let published_peaks x : text_file pworkflow =
+  let published_peaks x : text file =
     let url = base_url ^ published_peaks_url_suffix x in
     Bistro_unix.(wget url |> gunzip |> crlf2lf)
 

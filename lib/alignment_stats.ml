@@ -1,7 +1,7 @@
 open Core_kernel
 open Bistro
 
-let%pworkflow[@version 2] bamstats (bam : bam pworkflow) =
+let%pworkflow[@version 2] bamstats (bam : bam file) =
   let open Biocaml_ez in
   let open CFStream in
   Bam.with_file [%path bam] ~f:(fun _ als ->
@@ -11,7 +11,7 @@ let%pworkflow[@version 2] bamstats (bam : bam pworkflow) =
   |> Sexp.to_string_hum
   |> fun data -> Out_channel.write_all [%dest] ~data
 
-let%pworkflow fragment_length_stats (bam : bam pworkflow) =
+let%pworkflow fragment_length_stats (bam : bam file) =
   let open Biocaml_ez in
   let open CFStream in
   Bam.with_file0 [%path bam] ~f:Bamstats.Fragment_length_histogram.(fun _ als ->
@@ -23,7 +23,7 @@ let%pworkflow fragment_length_stats (bam : bam pworkflow) =
   |> Sexp.to_string_hum
   |> fun data -> Out_channel.write_all [%dest] ~data
 
-let%pworkflow chrstats (bam : bam pworkflow) =
+let%pworkflow chrstats (bam : bam file) =
   let open Biocaml_ez in
   let open CFStream in
   Bam.with_file0 [%path bam] ~f:Bamstats.Chr_histogram.(fun header als ->

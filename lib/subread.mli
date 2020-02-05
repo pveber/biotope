@@ -19,10 +19,10 @@ val featureCounts :
   ?strandness:[`Unstranded | `Stranded | `Reversely_stranded] ->
   ?q:int ->
   ?nthreads:int ->
-  gff pworkflow ->
-  < format : [< `bam | `sam] ; .. > pworkflow -> (*FIXME: handle paired-hand, just add other file next to the other*)
-  [`featureCounts] dworkflow
+  gff file ->
+  < format : [< `bam | `sam] ; .. > file -> (*FIXME: handle paired-hand, just add other file next to the other*)
+  [`featureCounts] directory
 
-val featureCounts_tsv : [`featureCounts] dworkflow -> count_table pworkflow
-val featureCounts_htseq_tsv : [`featureCounts] dworkflow -> Htseq.count_tsv pworkflow
-val featureCounts_summary : [`featureCounts] dworkflow -> text_file pworkflow
+val featureCounts_tsv : [`featureCounts] directory -> count_table file
+val featureCounts_htseq_tsv : [`featureCounts] directory -> Htseq.count_tsv file
+val featureCounts_summary : [`featureCounts] directory -> text file

@@ -6,25 +6,25 @@ val trinity :
   ?mem:int ->
   ?no_normalize_reads:bool ->
   ?run_as_paired:bool ->
-  fastq pworkflow list SE_or_PE.t ->
-  fasta pworkflow
+  fastq file list SE_or_PE.t ->
+  fasta file
 
 val prepare_fastq :
   int ->
-  fastq pworkflow ->
-  fastq pworkflow
+  fastq file ->
+  fastq file
 
 val uniq_count_stats :
-  sam pworkflow -> text_file pworkflow
+  sam file -> text file
 
 val insilico_read_normalization :
   ?mem:int ->
   ?pairs_together:bool ->
   ?parallel_stats:bool ->
   max_cov:int ->
-  fastq pworkflow SE_or_PE.t ->
-  fastq pworkflow SE_or_PE.t
+  fastq file SE_or_PE.t ->
+  fastq file SE_or_PE.t
 
 val get_Trinity_gene_to_trans_map :
-  fasta pworkflow ->
-  text_file pworkflow
+  fasta file ->
+  text file

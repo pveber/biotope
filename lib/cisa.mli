@@ -2,9 +2,9 @@ open Bistro
 
 val merge :
   ?min_length:int ->
-  (string * fasta pworkflow) list -> fasta pworkflow
+  (string * fasta file) list -> fasta file
 
 val cisa :
   genome_size:int ->
-  fasta pworkflow ->
-  fasta pworkflow
+  fasta file ->
+  fasta file

@@ -4,11 +4,6 @@ open Bistro.Shell_dsl
 
 let img = [ docker_image ~account:"pveber" ~name:"tophat" ~tag:"2.1.1" () ]
 
-class type output = object
-  inherit directory
-  method contents : [`tophat]
-end
-
 let tophat1 ?color index fqs =
   let args = match fqs with
     | SE_or_PE.Single_end fqs -> list dep ~sep:"," fqs

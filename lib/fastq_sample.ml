@@ -2,8 +2,8 @@ open Core_kernel
 open Bistro
 
 type t =
-  | Fq of fastq pworkflow list SE_or_PE.t
-  | Fq_gz of fastq gz pworkflow list SE_or_PE.t
+  | Fq of fastq file list SE_or_PE.t
+  | Fq_gz of fastq gz file list SE_or_PE.t
 
 let is_single_end = function
   | Fq (Single_end _)
@@ -28,7 +28,7 @@ module type Data = sig
 end
 
 module Make(Data : Data) = struct
-  let unsafe_file_of_url url : 'a pworkflow =
+  let unsafe_file_of_url url : 'a file =
     if String.is_prefix ~prefix:"http://" url || String.is_prefix ~prefix:"ftp://" url
     then Bistro_unix.wget url
     else Workflow.input url

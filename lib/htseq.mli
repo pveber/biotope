@@ -14,6 +14,6 @@ val count :
   ?feature_type:string ->
   ?minaqual:int ->
   ?idattribute:string ->
-  [`sam of sam pworkflow | `bam of bam pworkflow] ->
-  gff pworkflow ->
-  count_tsv pworkflow
+  [`sam of sam file | `bam of bam file] ->
+  gff file ->
+  count_tsv file

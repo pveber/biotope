@@ -1,10 +1,5 @@
 open Bistro
 
-class type index = object
-  method contents : [`bowtie2_index]
-  inherit directory
-end
-
 val bowtie2_build :
   ?large_index:bool ->
   ?noauto:bool ->
@@ -19,8 +14,8 @@ val bowtie2_build :
   ?ftabchars:int ->
   ?seed:int ->
   ?cutoff:int ->
-  fasta pworkflow ->
-  index pworkflow
+  fasta file ->
+  [`bowtie2_index] directory
 
 val bowtie2 :
   ?skip:int ->
@@ -47,8 +42,8 @@ val bowtie2 :
   ?no_unal:bool ->
   ?seed:int ->
   ?fastq_format:Fastq.format ->
-  index pworkflow ->
+  [`bowtie2_index] directory ->
   Fastq_sample.t ->
-  sam pworkflow
+  sam file
 
 val qual_option : Fastq.format -> string

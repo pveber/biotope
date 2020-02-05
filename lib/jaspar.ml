@@ -1,10 +1,4 @@
 open Core_kernel
-open Bistro
-
-class type jaspar_db = object
-  inherit directory
-  method contents : [`jaspar_matrix] list
-end
 
 let core_vertebrates_non_redundant =
   Bistro_unix.wget
@@ -21,7 +15,7 @@ let%workflow motif_list db =
         | "." | ".." -> false
         | _ -> true
       )
-    |> List.map ~f:(fun fn -> Gzt.Jaspar.of_file (Filename.concat db_dir fn))
+    |> List.map ~f:(fun fn -> Biotk.Jaspar.of_file (Filename.concat db_dir fn))
     |> Result.all
   in
   match motifs with

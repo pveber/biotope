@@ -3,7 +3,7 @@ open Bistro
 val pileup :
   ?extsize:int ->
   ?both_direction:bool ->
-  bam pworkflow -> Ucsc_gb.bedGraph pworkflow
+  bam file -> Ucsc_gb.bedGraph file
 
 type gsize = [`hs | `mm | `ce | `dm | `gsize of int]
 type keep_dup = [ `all | `auto | `int of int ]
@@ -12,21 +12,6 @@ type _ format
 
 val sam : sam format
 val bam : bam format
-
-class type output = object
-  inherit directory
-  method contents : [`macs2]
-end
-
-class type narrow_output = object
-  inherit output
-  method peak_type : [`narrow]
-end
-
-class type broad_output = object
-  inherit output
-  method peak_type : [`broad]
-end
 
 val callpeak :
   ?pvalue:float ->
@@ -38,11 +23,11 @@ val callpeak :
   ?extsize:int ->
   ?nomodel:bool ->
   ?bdg:bool ->
-  ?control:'a pworkflow list ->
+  ?control:'a file list ->
   ?keep_dup:keep_dup ->
   'a format ->
-  'a pworkflow list ->
-  narrow_output pworkflow
+  'a file list ->
+  [`macs2_narrow] directory
 
 class type peaks_xls = object
   inherit bed3
@@ -54,7 +39,7 @@ class type peaks_xls = object
   method f9 : float
 end
 
-val peaks_xls : #output pworkflow -> peaks_xls pworkflow
+val peaks_xls : [< `macs2_narrow | `macs2_broad] directory -> peaks_xls file
 
 class type narrow_peaks = object
   inherit bed5
@@ -65,14 +50,14 @@ class type narrow_peaks = object
   method f10 : int
 end
 
-val narrow_peaks : narrow_output pworkflow -> narrow_peaks pworkflow
+val narrow_peaks : [`macs2_narrow] directory -> narrow_peaks file
 
 class type peak_summits = object
   inherit bed4
   method f5 : float
 end
 
-val peak_summits : #output pworkflow -> peak_summits pworkflow
+val peak_summits : [< `macs2_narrow | `macs2_broad] directory -> peak_summits file
 
 val callpeak_broad :
   ?pvalue:float ->
@@ -84,11 +69,11 @@ val callpeak_broad :
   ?extsize:int ->
   ?nomodel:bool ->
   ?bdg:bool ->
-  ?control:'a pworkflow list ->
+  ?control:'a file list ->
   ?keep_dup:keep_dup ->
   'a format ->
-  'a pworkflow list ->
-  broad_output pworkflow
+  'a file list ->
+  [`macs2_broad] directory
 
 class type broad_peaks = object
   inherit bed5
@@ -98,4 +83,4 @@ class type broad_peaks = object
   method f9 : float
 end
 
-val broad_peaks : broad_output pworkflow -> broad_peaks pworkflow
+val broad_peaks : [`macs2_broad] directory -> broad_peaks file

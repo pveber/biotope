@@ -1,8 +1,8 @@
 open Bistro
 
-val assembly_summary : tsv pworkflow
+val assembly_summary : tsv file
 
 val fetch_assembly :
   genome_id:string ->
   assembly_id:string ->
-  fasta gz pworkflow
+  fasta gz file

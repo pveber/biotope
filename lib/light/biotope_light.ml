@@ -1,13 +1,13 @@
 open Core_kernel
 open Bistro
-open Bistro_bioinfo
+open Biotope
 
 module Text = struct
   type t = string workflow
 end
 
 module File = struct
-  type t = file pworkflow
+  type t = regular_file_t file
   let input x = Workflow.input x
 
   module Summary = struct
@@ -28,17 +28,17 @@ module File = struct
 end
 
 module Svg = struct
-  type t = svg pworkflow
+  type t = svg file
 end
 
 module Html = struct
   type elt =
     | H1 of string
     | Text of string
-    | Svg of svg pworkflow
+    | Svg of svg file
 
   type t =
-    | Workflow of html pworkflow
+    | Workflow of html file
     | Elements of string * elt list
 
   let make ~title xs = Elements (title, xs)
@@ -75,8 +75,8 @@ end
 
 module Fastq = struct
   type t =
-    | Plain of sanger_fastq pworkflow SE_or_PE.t
-    | Gziped of sanger_fastq gz pworkflow SE_or_PE.t
+    | Plain  of fastq file SE_or_PE.t
+    | Gziped of fastq gz file SE_or_PE.t
 
   let se_or_pe_input x =
     SE_or_PE.map x ~f:Workflow.input
@@ -95,7 +95,7 @@ module Fastq = struct
 
   (* FIXME: move this into biotope *)
   let%workflow fastq_stats fq =
-    Gzt.Fastq.Stats.of_file [%path fq]
+    Biotk.Fastq.Stats.of_file [%path fq]
     |> ok_exn
 
   let workflow_se_or_pe =
@@ -121,7 +121,7 @@ module Fastq = struct
         |> workflow_se_or_pe
     in
     [%workflow
-      match ([%eval summaries] : Gzt.Fastq.Stats.t SE_or_PE.t) with
+      match ([%eval summaries] : Biotk.Fastq.Stats.t SE_or_PE.t) with
       | Single_end stats ->
         sprintf "Single-end; number_of_reads: %d" stats.nb_reads
       | Paired_end (r1, r2) ->
@@ -144,12 +144,12 @@ module Sra_toolkit = struct
 end
 
 module FastQC = struct
-  type t = FastQC.report pworkflow SE_or_PE.t
+  type t = FastQC.report SE_or_PE.t
   let fastqc (x : Fastq.t) =
     match x with
-    | Plain x -> SE_or_PE.map x ~f:FastQC.run
+    | Plain x -> SE_or_PE.map x ~f:FastQC.fastqc
     | Gziped x ->
-      SE_or_PE.map x ~f:(fun x -> FastQC.run (Bistro_unix.gunzip x))
+      SE_or_PE.map x ~f:(fun x -> FastQC.fastqc (Bistro_unix.gunzip x))
   let html_report (x : t) = match x with
     | Single_end d ->
       Html.Workflow (FastQC.html_report d), None

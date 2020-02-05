@@ -1,6 +1,6 @@
 open Bistro
 
-val keep3 : #bed3 pworkflow -> bed3 pworkflow
-val keep4 : #bed4 pworkflow -> bed4 pworkflow
-val keep5 : #bed5 pworkflow -> bed5 pworkflow
-val keep6 : #bed6 pworkflow -> bed6 pworkflow
+val keep3 : #bed3 file -> bed3 file
+val keep4 : #bed4 file -> bed4 file
+val keep5 : #bed5 file -> bed5 file
+val keep6 : #bed6 file -> bed6 file

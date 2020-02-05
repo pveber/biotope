@@ -2,11 +2,6 @@ open Core_kernel
 open Bistro
 open Bistro.Shell_dsl
 
-class type output = object
-  inherit directory
-  method contents : [`fastq_screen]
-end
-
 let img = [ docker_image ~account:"pveber" ~name:"fastq-screen" ~tag:"0.11.1" () ]
 
 let rec filter_expr res = function

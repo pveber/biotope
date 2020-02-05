@@ -2,11 +2,6 @@ open Core_kernel
 open Bistro
 open Bistro.Shell_dsl
 
-class type index = object
-  method contents : [`bowtie2_index]
-  inherit directory
-end
-
 let img = [ docker_image ~account:"pveber" ~name:"bowtie2" ~tag:"2.3.3" () ]
 
 (* memory bound correspond to storing a human index in memory, following bowtie manual *)

@@ -5,5 +5,5 @@ type format =
   | Solexa
   | Phred64
 
-val concat : (#fastq as 'a) pworkflow list -> 'a pworkflow
-val head : int -> (#fastq as 'a) pworkflow -> 'a pworkflow
+val concat : (#fastq as 'a) file list -> 'a file
+val head : int -> (#fastq as 'a) file -> 'a file

@@ -15,7 +15,7 @@ class type abundance_table = object
 end
 
 val img : Shell_dsl.container_image list
-val index : fasta pworkflow list -> index pworkflow
+val index : fasta file list -> index file
 val quant :
   ?bias:bool ->
   ?bootstrap_samples:int ->
@@ -24,20 +24,20 @@ val quant :
   ?threads:int ->
   ?fragment_length:float ->
   ?sd:float ->
-  index pworkflow ->
-  fq1:[`fq of fastq pworkflow | `fq_gz of fastq gz pworkflow] ->
-  ?fq2:[`fq of fastq pworkflow | `fq_gz of fastq gz pworkflow] ->
+  index file ->
+  fq1:[`fq of fastq file | `fq_gz of fastq gz file] ->
+  ?fq2:[`fq of fastq file | `fq_gz of fastq gz file] ->
   unit ->
-  [`kallisto_output] dworkflow
+  [`kallisto] directory
 
-val abundance : [`kallisto_output] dworkflow -> abundance_table pworkflow
+val abundance : [`kallisto] directory -> abundance_table file
 
 val merge_eff_counts :
   sample_ids:string list ->
-  kallisto_outputs:abundance_table pworkflow list ->
-  tsv pworkflow
+  kallisto_outputs:abundance_table file list ->
+  tsv file
 
 val merge_tpms :
   sample_ids:string list ->
-  kallisto_outputs:abundance_table pworkflow list ->
-  tsv pworkflow
+  kallisto_outputs:abundance_table file list ->
+  tsv file

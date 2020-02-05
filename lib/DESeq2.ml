@@ -9,13 +9,13 @@ end
 
 type output =
   <
-    comparison_summary : table pworkflow ;
-    comparisons : ((string * string * string) * table pworkflow) list ;
-    effect_table : table pworkflow ;
-    normalized_counts : table pworkflow ;
-    sample_clustering : svg pworkflow ;
-    sample_pca : svg pworkflow ;
-    directory : directory pworkflow ;
+    comparison_summary : table file ;
+    comparisons : ((string * string * string) * table file) list ;
+    effect_table : table file ;
+    normalized_counts : table file ;
+    sample_clustering : svg file ;
+    sample_pca : svg file ;
+    directory : [`DESeq2] directory ;
   >
 
 let img = [ docker_image ~account:"pveber" ~name:"bioconductor" ~tag:"3.3" () ]

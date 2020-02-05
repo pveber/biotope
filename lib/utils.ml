@@ -1,8 +1,8 @@
 open Bistro
 
-let%pworkflow gff_of_bed3 ~feature_type ~attribute_type (bed : #bed3 pworkflow) : gff pworkflow =
+let%pworkflow gff_of_bed3 ~feature_type ~attribute_type (bed : #bed3 file) : gff file =
   let feature_type, attribute_type = [%param feature_type, attribute_type] in
-  let open Gzt_pipes in
+  let open Biotk.Pipe_parsers in
   run (
     from_file [%path bed]
     $$ bed_parser ()

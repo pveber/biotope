@@ -3,11 +3,11 @@ open Bistro
 val spades :
   ?single_cell:bool ->
   ?iontorrent:bool ->
-  ?pe:fastq pworkflow list * fastq pworkflow list ->
+  ?pe:fastq file list * fastq file list ->
   ?threads:int ->
   ?memory:int ->
   unit ->
-  [`spades] dworkflow
+  [`spades] directory
 
-val contigs : [`spades] dworkflow -> fasta pworkflow
-val scaffolds : [`spades] dworkflow -> fasta pworkflow
+val contigs : [`spades] directory -> fasta file
+val scaffolds : [`spades] directory -> fasta file

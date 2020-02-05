@@ -13,7 +13,7 @@ val bamcoverage :
   ?scalefactor:float ->
   ?filterrnastrand: [ `forward | `reverse ] ->
   ?binsize:int ->
-  ?blacklist:#bed3 pworkflow ->
+  ?blacklist:#bed3 file ->
   ?threads:int ->
   ?normalizeUsing:[`RPKM | `CPM | `BPM | `RPGC] ->
   ?ignorefornormalization:string list ->
@@ -28,8 +28,8 @@ val bamcoverage :
   ?minfragmentlength:int ->
   ?maxfragmentlength:int ->
   'a signal_format ->
-  indexed_bam pworkflow ->
-  'a pworkflow
+  [`indexed_bam] directory ->
+  'a file
 
 
 val bamcompare :
@@ -41,7 +41,7 @@ val bamcompare :
   ?pseudocount:int ->
   ?binsize:int ->
   ?region:string ->
-  ?blacklist:#bed3 pworkflow ->
+  ?blacklist:#bed3 file ->
   ?threads:int ->
   ?normalizeUsing:[`RPKM | `CPM | `BPM | `RPGC] ->
   ?ignorefornormalization:string list ->
@@ -56,9 +56,9 @@ val bamcompare :
   ?minfragmentlength:int ->
   ?maxfragmentlength:int ->
   'a signal_format ->
-  indexed_bam pworkflow ->
-  indexed_bam pworkflow ->
-  'a pworkflow
+  [`indexed_bam] directory ->
+  [`indexed_bam] directory ->
+  'a file
 
 
 val bigwigcompare :
@@ -67,12 +67,12 @@ val bigwigcompare :
   ?pseudocount:int ->
   ?binsize:int ->
   ?region:string ->
-  ?blacklist:#bed3 pworkflow ->
+  ?blacklist:#bed3 file ->
   ?threads:int ->
   'a signal_format ->
-  Ucsc_gb.bigWig pworkflow ->
-  Ucsc_gb.bigWig pworkflow ->
-  'a pworkflow
+  Ucsc_gb.bigWig file ->
+  Ucsc_gb.bigWig file ->
+  'a file
 
 class type compressed_numpy_array = object
   inherit binary_file
@@ -83,7 +83,7 @@ val multibamsummary_bins :
   ?binsize:int ->
   ?distancebetweenbins:int ->
   ?region:string ->
-  ?blacklist:#bed3 pworkflow ->
+  ?blacklist:#bed3 file ->
   ?threads:int ->
   ?outrawcounts:bool ->
   ?extendreads:int ->
@@ -94,13 +94,13 @@ val multibamsummary_bins :
   ?samflagexclude:int ->
   ?minfragmentlength:int ->
   ?maxfragmentlength:int ->
-  indexed_bam pworkflow list ->
-  compressed_numpy_array pworkflow
+  [`indexed_bam] directory list ->
+  compressed_numpy_array file
 
 
 val multibamsummary_bed :
   ?region:string ->
-  ?blacklist:#bed3 pworkflow ->
+  ?blacklist:#bed3 file ->
   ?threads:int ->
   ?outrawcounts:bool ->
   ?extendreads:int ->
@@ -115,9 +115,9 @@ val multibamsummary_bed :
   ?transcriptid:bool ->
   ?exonid:bool ->
   ?transcriptiddesignator:bool->
-  #bed3 pworkflow ->
-  indexed_bam pworkflow list ->
-  compressed_numpy_array pworkflow
+  #bed3 file ->
+  [`indexed_bam] directory list ->
+  compressed_numpy_array file
 
 class type deeptools_matrix = object
   inherit binary_file
@@ -138,13 +138,13 @@ val computeMatrix_reference_point :
   ?skipZeros:bool ->
   ?minThreshold:float ->
   ?maxThreshold:float ->
-  ?blackList:#bed3 pworkflow ->
+  ?blackList:#bed3 file ->
   ?scale:float ->
   ?numberOfProcessors:int ->
-  regions:#bed3 pworkflow list ->
-  scores:Ucsc_gb.bigWig pworkflow list ->
+  regions:#bed3 file list ->
+  scores:Ucsc_gb.bigWig file list ->
   unit ->
-  deeptools_matrix gz pworkflow
+  deeptools_matrix gz file
 
 val plotHeatmap :
   ?dpi:int ->
@@ -178,8 +178,8 @@ val plotHeatmap :
   ?legendLocation:[`best | `upper_right | `upper_left | `upper_center | `lower_left | `lower_right | `lower_center | `center | `center_left | `center_right | `none] ->
   ?perGroup:bool ->
   'a img_format ->
-  deeptools_matrix gz pworkflow ->
-  'a pworkflow
+  deeptools_matrix gz file ->
+  'a file
 
 val plotCorrelation :
   ?skipZeros:bool ->
@@ -192,8 +192,8 @@ val plotCorrelation :
   corMethod:[`spearman | `pearson] ->
   whatToPlot:[`heatmap | `scatterplot] ->
   'a img_format ->
-  compressed_numpy_array pworkflow ->
-  'a pworkflow
+  compressed_numpy_array file ->
+  'a file
 
 val plotProfile :
   ?dpi:int ->
@@ -217,8 +217,8 @@ val plotProfile :
   ?legendLocation:[`best | `upper_right | `upper_left | `upper_center | `lower_left | `lower_right | `lower_center | `center | `center_left | `center_right | `none] ->
   ?perGroup:bool ->
   'a img_format ->
-  deeptools_matrix gz pworkflow ->
-  'a pworkflow
+  deeptools_matrix gz file ->
+  'a file
 (** [plotHeight] and [plotWidth] are given in cm *)
 
 val plotEnrichment :
@@ -232,9 +232,9 @@ val plotEnrichment :
   ?numPlotsPerRow:int ->
   ?alpha:float ->
   ?offset:int ->
-  ?blackList:#bed3 pworkflow ->
+  ?blackList:#bed3 file ->
   ?numberOfProcessors:int ->
-  bams:bam pworkflow list ->
-  beds:#bed3 pworkflow list ->
+  bams:bam file list ->
+  beds:#bed3 file list ->
   'a img_format ->
-  'a pworkflow
+  'a file

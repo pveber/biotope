@@ -16,10 +16,10 @@ val idr :
   ?peak_merge_method:[ `sum | `avg | `min | `max] ->
   ?rank:[ `signal | `pvalue | `qvalue ] ->
   ?random_seed:int ->
-  ?peak_list:'a pworkflow ->
-  'a pworkflow ->
-  'a pworkflow ->
-  'a output dworkflow
+  ?peak_list:'a file ->
+  'a file ->
+  'a file ->
+  'a output directory
 
-val items : 'a output dworkflow -> 'a pworkflow
-val figure : _ output dworkflow -> png pworkflow
+val items : 'a output directory -> 'a file
+val figure : _ output directory -> png file

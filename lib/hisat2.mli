@@ -16,8 +16,8 @@ val hisat2_build :
   ?ftabchars:int ->
   ?seed:int ->
   ?cutoff:int ->
-  fasta pworkflow ->
-  [`hisat2_index] dworkflow
+  fasta file ->
+  [`hisat2_index] directory
 
 
 val hisat2 :
@@ -33,6 +33,6 @@ val hisat2 :
   ?no_mixed:bool ->
   ?no_discordant:bool ->
   ?seed:int ->
-  [`hisat2_index] dworkflow ->
-  #fastq pworkflow list SE_or_PE.t ->
-  sam pworkflow
+  [`hisat2_index] directory ->
+  #fastq file list SE_or_PE.t ->
+  sam file

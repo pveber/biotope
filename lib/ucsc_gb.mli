@@ -24,7 +24,7 @@ end
 
 class type wig = object
   method format : [`wig]
-  inherit text_file
+  inherit text
 end
 
 class type bigWig = object
@@ -37,43 +37,40 @@ val string_of_genome : [< genome] -> string
 val genome_of_string : string -> genome option
 
 (** {4 Dealing with genome sequences} *)
-class type chromosome_sequences = object
-  inherit directory
-  method contents : [`ucsc_chromosome_sequences]
-end
+type chromosome_sequences = [`ucsc_chromosome_sequences] directory
 
 val chromosome_sequence :
   [< genome] ->
   string ->
-  fasta pworkflow
-val chromosome_sequences : [< genome] -> chromosome_sequences pworkflow
-val genome_sequence : [< genome] -> fasta pworkflow
-val genome_2bit_sequence : [< genome] -> twobit pworkflow
-val twoBitToFa : twobit pworkflow -> #bed4 pworkflow -> fasta pworkflow
+  fasta file
+val chromosome_sequences : [< genome] -> [`ucsc_chromosome_sequences] directory
+val genome_sequence : [< genome] -> fasta file
+val genome_2bit_sequence : [< genome] -> twobit file
+val twoBitToFa : twobit file -> #bed4 file -> fasta file
 
 
 (** {4 Chromosome size and clipping} *)
-val fetchChromSizes : [< genome] -> chrom_sizes pworkflow
-val bedClip : chrom_sizes pworkflow -> (#bed3 as 'a) pworkflow -> 'a pworkflow
+val fetchChromSizes : [< genome] -> chrom_sizes file
+val bedClip : chrom_sizes file -> (#bed3 as 'a) file -> 'a file
 
 
 (** {4 Conversion between annotation file formats} *)
 (* val wig_of_bigWig : bigWig file -> wig file *)
 (* val bigWig_of_wig : ?clip:bool -> [< genome] -> wig file -> bigWig file *)
-val bedGraphToBigWig : [< genome] -> bedGraph pworkflow -> bigWig pworkflow
+val bedGraphToBigWig : [< genome] -> bedGraph file -> bigWig file
 
 val bedToBigBed :
   [< genome] ->
-  [ `bed3 of bed3 pworkflow | `bed5 of bed5 pworkflow ] ->
-  bigBed pworkflow
+  [ `bed3 of bed3 file | `bed5 of bed5 file ] ->
+  bigBed file
 (** bedToBigBed utility. Fails when given an empty BED file on
     input. Note that the underlying bedToBigBed expects BED
     files with {i exactly} 3 or 5 columns. *)
 
 val bedToBigBed_failsafe :
   [< genome] ->
-  [ `bed3 of bed3 pworkflow | `bed5 of bed5 pworkflow ] ->
-  bigBed pworkflow
+  [ `bed3 of bed3 file | `bed5 of bed5 file ] ->
+  bigBed file
 (** sam  as {! Ucsc_gb.bedToBigBed} but produces an empty file when
     given an empty BED on input. *)
 
@@ -87,26 +84,23 @@ val bedToBigBed_failsafe :
 
 module Lift_over : sig
   class type chain_file = object
-    inherit file
+    inherit regular_file_t
     method format : [`lift_over_chain_file]
   end
-  class type ['a] output = object
-    inherit directory
-    method format : [`ucsc_lift_over of 'a]
-  end
+  type 'a output = [`ucsc_lift_over of 'a] directory
 
   val chain_file :
     org_from:[< genome] ->
     org_to:[< genome] ->
-    chain_file pworkflow
+    chain_file file
 
   val bed :
     org_from:[< genome] ->
     org_to:[< genome] ->
-    (* chain_file pworkflow -> *)
-    (#bed3 as 'a) pworkflow ->
-    'a output pworkflow
+    (* chain_file file -> *)
+    (#bed3 as 'a) file ->
+    'a output
 
-  val mapped : 'a output pworkflow -> 'a pworkflow
-  val unmapped : 'a output pworkflow -> 'a pworkflow
+  val mapped : 'a output -> 'a file
+  val unmapped : 'a output -> 'a file
 end

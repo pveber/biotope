@@ -1,8 +1,8 @@
 open Bistro
 
 type t =
-  | Fq of fastq pworkflow list SE_or_PE.t
-  | Fq_gz of fastq gz pworkflow list SE_or_PE.t
+  | Fq of fastq file list SE_or_PE.t
+  | Fq_gz of fastq gz file list SE_or_PE.t
 
 val is_single_end : t -> bool
 
@@ -20,8 +20,8 @@ module type Data = sig
 end
 
 module Make(Data : Data) : sig
-  val fastq : Data.t -> fastq pworkflow list SE_or_PE.t
-  val fastq_gz : Data.t -> fastq gz pworkflow list SE_or_PE.t
+  val fastq : Data.t -> fastq file list SE_or_PE.t
+  val fastq_gz : Data.t -> fastq gz file list SE_or_PE.t
   val fastq_sample : Data.t -> t
-  val fastqc : Data.t -> FastQC.report pworkflow list SE_or_PE.t
+  val fastqc : Data.t -> FastQC.report list SE_or_PE.t
 end

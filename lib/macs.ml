@@ -8,11 +8,6 @@ type _ format =
   | Sam
   | Bam
 
-class type output = object
-  inherit directory
-  method contents : [`macs]
-end
-
 let sam = Sam
 let bam = Bam
 

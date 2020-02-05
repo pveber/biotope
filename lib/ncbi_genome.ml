@@ -1,7 +1,7 @@
 open Core_kernel
 
 let assembly_summary =
-  Bistro_unix.wget Gzt.Ncbi_genome.refseq_assembly_summary_url
+  Bistro_unix.wget Biotk.Ncbi_genome.refseq_assembly_summary_url
 
 let fetch_assembly ~genome_id ~assembly_id =
   let genome_number =

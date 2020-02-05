@@ -7,14 +7,14 @@ val sam : sam format
 
 val sort :
   ?on:[`name | `position] ->
-  bam pworkflow -> bam pworkflow
-val indexed_bam_of_sam : sam pworkflow -> indexed_bam pworkflow
-val indexed_bam_of_bam : bam pworkflow -> indexed_bam pworkflow
-val indexed_bam_to_bam : indexed_bam pworkflow -> bam pworkflow
-val bam_of_sam : sam pworkflow -> bam pworkflow
-val sam_of_bam : bam pworkflow -> sam pworkflow
+  bam file -> bam file
+val indexed_bam_of_sam : sam file -> [`indexed_bam] directory
+val indexed_bam_of_bam : bam file -> [`indexed_bam] directory
+val indexed_bam_to_bam : [`indexed_bam] directory -> bam file
+val bam_of_sam : sam file -> bam file
+val sam_of_bam : bam file -> sam file
 
-(* val rmdup : ?single_end_mode:bool -> bam pworkflow -> bam pworkflow *)
+(* val rmdup : ?single_end_mode:bool -> bam file -> bam file *)
 
 val view :
   output:'o format ->
@@ -23,7 +23,7 @@ val view :
   ?h:bool ->
   ?_H:bool ->
   (* ?c:bool -> *)
-  (* ?_L: #bed3 pworkflow -> *)
+  (* ?_L: #bed3 file -> *)
   ?q:int ->
   (* ?m:int ->
    * ?f:int ->
@@ -31,15 +31,15 @@ val view :
    * ?_B:bool ->
    * ?s:float -> *)
   < file_kind : [`regular] ;
-    format : [< `bam | `sam] ; .. > pworkflow ->
-  'o pworkflow
+    format : [< `bam | `sam] ; .. > file ->
+  'o file
 
 val faidx :
-  fasta pworkflow -> indexed_fasta pworkflow
+  fasta file -> [`indexed_fasta] directory
 
 val fasta_of_indexed_fasta :
-  indexed_fasta pworkflow -> fasta pworkflow
+  [`indexed_fasta] directory -> fasta file
 
 val flagstats :
-  < file ; format : [< `bam | `sam] ; .. > pworkflow ->
-  text_file pworkflow
+  < regular_file_t ; format : [< `bam | `sam] ; .. > file ->
+  text file

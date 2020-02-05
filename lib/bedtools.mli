@@ -20,8 +20,8 @@ module Cmd : sig
       | `left_pct of float
       | `right_pct of float
     ] ->
-    'a pworkflow ->
-    Ucsc_gb.chrom_sizes pworkflow ->
+    'a file ->
+    Ucsc_gb.chrom_sizes file ->
     Bistro.Shell_dsl.command
 end
 
@@ -38,9 +38,9 @@ val slop :
     | `right_pct of float
   ] ->
   'a input ->
-  'a pworkflow ->
-  Ucsc_gb.chrom_sizes pworkflow ->
-  'a pworkflow
+  'a file ->
+  Ucsc_gb.chrom_sizes file ->
+  'a file
 
 
 val intersect :
@@ -61,14 +61,14 @@ val intersect :
   ?_S:bool ->
   ?split:bool ->
   ?sorted:bool ->
-  ?g:Ucsc_gb.chrom_sizes pworkflow ->
+  ?g:Ucsc_gb.chrom_sizes file ->
   ?header:bool ->
   ?filenames:bool ->
   ?sortout:bool ->
   'a input ->
-  'a pworkflow ->
-  #bed3 pworkflow list ->
-  'a pworkflow
+  'a file ->
+  #bed3 file list ->
+  'a file
 
 val bamtobed :
   ?bed12:bool ->
@@ -77,8 +77,8 @@ val bamtobed :
   ?ed:bool ->
   ?tag:bool ->
   ?cigar:bool ->
-  bam pworkflow ->
-  #bed6 pworkflow
+  bam file ->
+  #bed6 file
 
 val closest :
   ?strand:[`same | `opposite] ->
@@ -92,6 +92,6 @@ val closest :
   ?k:int ->
   ?header:bool ->
   'a input ->
-  'a pworkflow ->
-  #bed3 pworkflow list ->
-  'a pworkflow
+  'a file ->
+  #bed3 file list ->
+  'a file

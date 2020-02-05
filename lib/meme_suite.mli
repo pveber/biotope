@@ -8,27 +8,27 @@ val meme :
   ?maxsize:int ->
   ?alphabet:[`dna | `rna | `protein] ->
   (* ?threads:int -> *)
-  fasta pworkflow ->
-  [`meme] dworkflow
+  fasta file ->
+  [`meme] directory
 
 val meme_logo :
-  [`meme] dworkflow ->
+  [`meme] directory ->
   ?rc:bool ->
   int ->
-  png pworkflow
+  png file
 
 val meme_chip :
   ?meme_nmotifs:int ->
   ?meme_minw:int ->
   ?meme_maxw:int ->
   (* ?np:int -> *)
-  fasta pworkflow ->
-  [`meme_chip] dworkflow
+  fasta file ->
+  [`meme_chip] directory
 
 (** http://meme-suite.org/doc/fimo.html?man_type=web *)
 val fimo :
   ?alpha: float ->
-  ?bgfile:text_file pworkflow ->
+  ?bgfile:text file ->
   ?max_stored_scores: int ->
   ?max_strand:bool ->
   ?motif:string ->
@@ -36,10 +36,10 @@ val fimo :
   ?no_qvalue:bool ->
   ?norc:bool ->
   ?parse_genomic_coord:bool ->
-  ?prior_dist:text_file pworkflow ->
-  ?psp:text_file pworkflow ->
+  ?prior_dist:text file ->
+  ?psp:text file ->
   ?qv_thresh:bool ->
   ?thresh: float ->
-  [`meme] dworkflow ->
-  fasta pworkflow ->
-  directory pworkflow
+  [`meme] directory ->
+  fasta file ->
+  [`fimo] directory

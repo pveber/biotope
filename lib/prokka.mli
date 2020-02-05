@@ -28,5 +28,5 @@ val run :
   ?norrna:bool ->
   ?notrna:bool ->
   ?rnammer:bool ->
-  fasta pworkflow ->
-  directory pworkflow
+  fasta file ->
+  [`prokka] directory

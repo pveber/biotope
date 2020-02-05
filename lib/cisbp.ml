@@ -1,31 +1,31 @@
 open Core_kernel
 open Bistro
 
-let fetch_pwm_archive : directory pworkflow =
-  Bistro_unix.wget Gzt.Cisbp.pwm_archive_url
+let fetch_pwm_archive : [`cisbp] directory =
+  Bistro_unix.wget Biotk.Cisbp.pwm_archive_url
   |> Bistro_unix.unzip
   |> Fn.flip Workflow.select ["pwms"]
 
-let fetch_tf_information : tsv pworkflow =
-  Bistro_unix.wget Gzt.Cisbp.tf_information_archive_url
+let fetch_tf_information : tsv file =
+  Bistro_unix.wget Biotk.Cisbp.tf_information_archive_url
   |> Bistro_unix.unzip
   |> Fn.flip Workflow.select ["TF_Information_all_motifs.txt"]
 
 type annotated_motif = {
   id : string ;
   tf_name : string ;
-  pwm : Gzt.Pwm.t ;
-  rc_pwm : Gzt.Pwm.t ;
+  pwm : Biotk.Pwm.t ;
+  rc_pwm : Biotk.Pwm.t ;
   threshold : float ;
-  infos : Gzt.Cisbp.TF_information.item list ;
+  infos : Biotk.Cisbp.TF_information.item list ;
 }
 
 let%workflow annotated_motifs =
   let motifs =
-    Gzt.Cisbp.Motif.read_all_in_dir [%path fetch_pwm_archive]
+    Biotk.Cisbp.Motif.read_all_in_dir [%path fetch_pwm_archive]
   in
   let motif_info =
-    Gzt.Cisbp.TF_information.from_file [%path fetch_tf_information]
+    Biotk.Cisbp.TF_information.from_file [%path fetch_tf_information]
     |> List.filter ~f:(fun mi -> String.equal mi.tf_species "Mus_musculus")
     |> List.filter_map ~f:(fun mi ->
         Option.map mi.motif_id ~f:(fun id -> id, mi)
@@ -49,9 +49,9 @@ let%workflow annotated_motifs =
   in
   let n = List.length selected_motifs in
   List.mapi selected_motifs ~f:(fun i (id, tf_name, motif, infos) ->
-      let pwm = Gzt.Cisbp.Motif.pwm motif in
-      let threshold = Gzt.Pwm_stats.TFM_pvalue.score_of_pvalue pwm (Gzt.Pwm.flat_background ()) 1e-4 in
-      let rc_pwm = Gzt.Pwm.reverse_complement pwm in
+      let pwm = Biotk.Cisbp.Motif.pwm motif in
+      let threshold = Biotk.Pwm_stats.TFM_pvalue.score_of_pvalue pwm (Biotk.Pwm.flat_background ()) 1e-4 in
+      let rc_pwm = Biotk.Pwm.reverse_complement pwm in
       ignore (
         Sys.command (sprintf "echo %s %s %d/%d >> delme" Time.(now () |> to_string) tf_name i n)
         : int

@@ -1,7 +1,7 @@
 open Bistro
 
 val quast :
-  ?reference:fasta pworkflow ->
+  ?reference:fasta file ->
   ?labels:string list ->
-  fasta pworkflow list ->
-  [`quast] dworkflow
+  fasta file list ->
+  [`quast] directory

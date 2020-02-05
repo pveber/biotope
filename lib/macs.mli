@@ -5,16 +5,11 @@ type keep_dup = [ `all | `auto | `int of int ]
 
 type _ format
 
-class type output = object
-  inherit directory
-  method contents : [`macs]
-end
-
 val sam : sam format
 val bam : bam format
 
 val run :
-  ?control: 'a pworkflow list ->
+  ?control: 'a file list ->
   ?petdist:int ->
   ?gsize:gsize ->
   ?tsize:int ->
@@ -39,8 +34,8 @@ val run :
   ?fe_max:int ->
   ?fe_step:int ->
   'a format ->
-  'a pworkflow list ->
-  output pworkflow
+  'a file list ->
+  [`macs2] directory
 
 class type peaks_xls = object
   inherit bed3
@@ -52,7 +47,7 @@ class type peaks_xls = object
   method f9 : float
 end
 
-val peaks_xls : output pworkflow -> peaks_xls pworkflow
+val peaks_xls : [`macs2] directory -> peaks_xls file
 
 class type narrow_peaks = object
   inherit bed5
@@ -64,7 +59,7 @@ class type narrow_peaks = object
 end
 
 val narrow_peaks :
-  output pworkflow -> narrow_peaks pworkflow
+  [`macs2] directory -> narrow_peaks file
 
 class type peak_summits = object
   inherit bed4
@@ -72,4 +67,4 @@ class type peak_summits = object
 end
 
 val peak_summits :
-  output pworkflow -> peak_summits pworkflow
+  [`macs2] directory -> peak_summits file

@@ -7,14 +7,9 @@ type 'a sample = {
   tissue : string ;
   factor : string ;
   replicate : string ;
-  bam : indexed_bam pworkflow ;
-  peaks : (#bed3 as 'a) pworkflow ;
+  bam : [`indexed_bam] directory ;
+  peaks : (#bed3 as 'a) file ;
 }
-
-class type output = object
-  inherit directory
-  method contents : [`ChIPQC]
-end
 
 let img = [ docker_image ~account:"pveber" ~name:"bioconductor" ~tag:"3.8" () ]
 
