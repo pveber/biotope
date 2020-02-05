@@ -12,4 +12,13 @@ bug-reports: "https://github.com/pveber/biotope/issues"
 homepage: "https://github.com/pveber/biotope/"
 license: "CeCILL-B"
 dev-repo: "git+https://github.com/pveber/biotope.git"
-depends: ["bistro"]
+synopsis: "Bioinformatics pipeline library"
+description: """
+Biotope provides a collection of building blocks to
+                construct analysis pipelines in bioinformatics. It
+                specializes in NGS analysis, genomics and
+                phylogeny. The library comes in two flavours: either a
+                simple, integrated API named biotope-light, or a more
+                advanced relying on bistro workflows that can be more
+                easily extended."""
+depends: ["biotk" "bistro"]

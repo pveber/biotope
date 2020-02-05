@@ -12,5 +12,12 @@
 (package
   (name biotope)
   (tags (bioinformatics))
-  (depends
-    bistro))
+  (synopsis "Bioinformatics pipeline library")
+  (description "Biotope provides a collection of building blocks to
+                construct analysis pipelines in bioinformatics. It
+                specializes in NGS analysis, genomics and
+                phylogeny. The library comes in two flavours: either a
+                simple, integrated API named biotope-light, or a more
+                advanced relying on bistro workflows that can be more
+                easily extended.")
+  (depends biotk bistro))
