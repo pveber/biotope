@@ -60,18 +60,25 @@ let bowtie2
     ?a ?k ?_D ?_R ?minins ?maxins ?orientation
     ?no_mixed ?no_discordant ?dovetail ?no_contain ?no_overlap
     ?no_unal ?seed
-    ?fastq_format index (fqs : Fastq_sample.t) =
-
+    ?fastq_format ?(additional_samples = []) index fq_sample =
+  let fq_samples = fq_sample :: additional_samples in
   let args =
-    match Fastq_sample.dep fqs with
-    | SE_or_PE.Single_end fqs ->
-      opt "-U" (seq ~sep:",") fqs
-    | Paired_end (fqs1, fqs2) ->
-      seq [
-        opt "-1" (seq ~sep:",") fqs1 ;
-        string " " ;
-        opt "-2" (seq ~sep:",") fqs2
-      ]
+    let (fqs, fqs1, fqs2), (fqs_gz, fqs1_gz, fqs2_gz) =
+      Fastq_sample.explode fq_samples
+    in
+    let fqs = List.map fqs ~f:dep @ List.map fqs_gz ~f:Bistro_unix.Cmd.gzdep in
+    let fqs1 = List.map fqs1 ~f:dep @ List.map fqs1_gz ~f:Bistro_unix.Cmd.gzdep in
+    let fqs2 = List.map fqs2 ~f:dep @ List.map fqs2_gz ~f:Bistro_unix.Cmd.gzdep in
+    List.filter_opt [
+      if List.is_empty fqs then None else Some (opt "-U" (seq ~sep:",") fqs) ;
+      if List.is_empty fqs1 then None else Some (
+          seq [
+              opt "-1" (seq ~sep:",") fqs1 ;
+              string " " ;
+              opt "-2" (seq ~sep:",") fqs2
+            ])
+    ]
+    |> seq ~sep:" "
   in
   Workflow.shell ~descr:"bowtie2" ~mem:(Workflow.int (3 * 1024)) ~np:8 [
     cmd "bowtie2" ~img [

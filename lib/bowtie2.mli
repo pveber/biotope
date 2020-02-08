@@ -42,6 +42,7 @@ val bowtie2 :
   ?no_unal:bool ->
   ?seed:int ->
   ?fastq_format:Fastq.format ->
+  ?additional_samples:Fastq_sample.t list ->
   [`bowtie2_index] directory ->
   Fastq_sample.t ->
   sam file

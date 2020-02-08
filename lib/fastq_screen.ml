@@ -38,9 +38,9 @@ let fastq_screen ?bowtie2_opts ?filter ?illumina ?nohits ?pass ?subset
     ?tag ?(threads = 1) ?top ?(lightweight = true) fqs genomes =
   let args =
     match Fastq_sample.dep fqs with
-    | SE_or_PE.Single_end fqs -> seq ~sep:" " fqs
+    | SE_or_PE.Single_end fqs -> fqs
     | Paired_end (fqs1, fqs2) ->
-      seq [ seq ~sep:" " fqs1 ; string " " ; seq ~sep:" " fqs2 ]
+      seq ~sep:" " [ fqs1 ; fqs2 ]
   in
   Workflow.shell ~descr:"fastq_screen" ~np:threads ~mem:(Workflow.int (3 * 1024)) [
     mkdir_p dest ;

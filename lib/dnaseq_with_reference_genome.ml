@@ -64,15 +64,6 @@ module Make(S : Sample) = struct
       gff
       ((if no_dups then mapped_reads_nodup else mapped_reads_bam) x)
 
-  let reduce_se_or_pe = SE_or_PE.map ~f:(function
-      | [] -> []
-      | h :: _ -> [ h ]
-    )
-
-  let reduce_fastq_sample : Fastq_sample.t -> Fastq_sample.t = function
-    | Fq x -> Fq (reduce_se_or_pe x)
-    | Fq_gz x -> Fq_gz (reduce_se_or_pe x)
-
   let fastq_screen ~possible_contaminants x =
     let genomes =
       (match S.reference_genome x with
@@ -84,7 +75,7 @@ module Make(S : Sample) = struct
     Fastq_screen.fastq_screen
       ~bowtie2_opts:"--end-to-end"
       ~nohits:true
-      (reduce_fastq_sample (S.fastq_sample x))
+      (S.fastq_sample x)
       genomes
     |> Fastq_screen.html_report
 
