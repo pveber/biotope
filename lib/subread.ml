@@ -23,6 +23,9 @@ let strandness_token = function
 
 let featureCounts
     ?feature_type ?attribute_type ?strandness
+    ?chrAliases ?requireBothEndsMapped ?countChimericFragments
+    ?minFragLength ?maxFragLength ?useMetaFeatures
+    ?allowMultiOverlap ?fraction
     ?q ?nthreads
     gff mapped_reads =
   Workflow.shell ~descr:"featureCounts" ~np:(Option.value ~default:1 nthreads) [
@@ -31,6 +34,14 @@ let featureCounts
       option (opt "-t" string) feature_type ;
       option (opt "-g" string) attribute_type ;
       option (opt "-s" strandness_token) strandness ;
+      option (opt "-A" dep) chrAliases ;
+      option (flag string "-B") requireBothEndsMapped ;
+      option (flag string "-C") countChimericFragments ;
+      option (opt "-d" int) minFragLength ;
+      option (opt "-D" int) maxFragLength ;
+      option (flag string "-f") useMetaFeatures ;
+      option (flag string "-O") allowMultiOverlap ;
+      option (opt "-f" float) fraction ;
       option (opt "-Q" int) q ;
       option (opt "-T" (fun _ -> np)) nthreads ;
       opt "-a" dep gff ;

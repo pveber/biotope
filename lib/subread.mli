@@ -17,6 +17,14 @@ val featureCounts :
   ?feature_type:string ->
   ?attribute_type:string ->
   ?strandness:[`Unstranded | `Stranded | `Reversely_stranded] ->
+  ?chrAliases:csv file ->
+  ?requireBothEndsMapped:bool ->
+  ?countChimericFragments:bool ->
+  ?minFragLength:int ->
+  ?maxFragLength:int ->
+  ?useMetaFeatures:bool ->
+  ?allowMultiOverlap:bool ->
+  ?fraction:float ->
   ?q:int ->
   ?nthreads:int ->
   gff file ->
