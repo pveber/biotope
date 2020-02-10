@@ -1,6 +1,6 @@
 open Bistro
 
-let%pworkflow gff_of_bed3 ~feature_type ~attribute_type (bed : #bed3 file) : gff file =
+let%pworkflow of_bed3 ~feature_type ~attribute_type (bed : #bed3 file) : gff file =
   let feature_type, attribute_type = [%param feature_type, attribute_type] in
   let open Biotk.Pipe_parsers in
   run (
