@@ -1,5 +1,6 @@
 open Core_kernel
 open Bistro
+open Biotk
 
 type reference_genome =
   | Ucsc_gb of Ucsc_gb.genome
@@ -10,7 +11,7 @@ module type Sample = sig
   val reference_genome : t -> reference_genome
   val all : t list
   val to_string : t -> string
-  val fastq_sample : t -> Fastq_sample.t
+  val fastq_samples : t -> Fastq_sample.t List1.t
 end
 
 module Make(S : Sample) = struct
@@ -23,12 +24,15 @@ module Make(S : Sample) = struct
     |> Bowtie2.bowtie2_build
 
   let mapped_reads x =
-    let fq_sample = S.fastq_sample x in
+    let List1.Cons (fq, other_fqs) = S.fastq_samples x in
+    let fq_samples = fq :: other_fqs in
+    let all_single_end = List.for_all fq_samples ~f:Fastq_sample.is_single_end in
     Bowtie2.bowtie2 ~maxins:800
       (bowtie2_index (S.reference_genome x))
       ~no_mixed:true
-      ~no_discordant:(not (Fastq_sample.is_single_end fq_sample))
-      fq_sample
+      ~no_discordant:(not all_single_end)
+      ~additional_samples:other_fqs
+      fq
     |> Samtools.(view ~output:sam ~h:true ~q:5)
 
 
@@ -75,7 +79,7 @@ module Make(S : Sample) = struct
     Fastq_screen.fastq_screen
       ~bowtie2_opts:"--end-to-end"
       ~nohits:true
-      (S.fastq_sample x)
+      (List1.hd (S.fastq_samples x))
       genomes
     |> Fastq_screen.html_report
 

@@ -1,4 +1,5 @@
 open Bistro
+open Biotk
 
 type reference_genome =
   | Ucsc_gb of Ucsc_gb.genome
@@ -9,7 +10,7 @@ module type Sample = sig
   val reference_genome : t -> reference_genome
   val all : t list
   val to_string : t -> string
-  val fastq_sample : t -> Fastq_sample.t
+  val fastq_samples : t -> Fastq_sample.t List1.t
 end
 
 module Make(S : Sample) : sig
