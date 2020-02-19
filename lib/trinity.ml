@@ -4,15 +4,22 @@ open Bistro.Shell_dsl
 
 let img = [ docker_image ~account:"pveber" ~name:"trinity" ~tag:"2.5.1" () ]
 
-let dep_list fqs = list ~sep:"," dep fqs
-
-let fqs_option_template = function
-  | SE_or_PE.Single_end fqs -> opt "--single" dep_list fqs
-  | Paired_end (fqs1, fqs2) ->
-    seq ~sep:" " [
-      opt "--left"  dep_list fqs1 ;
-      opt "--right" dep_list fqs2 ;
-    ]
+let fqs_option_template fastq_samples =
+  let (fqs, fq1s, fq2s), (fq_gzs, fq1_gzs, fq2_gzs) = Fastq_sample.explode fastq_samples in
+  let arg_list plain_files compressed_files =
+    let tokens = List.map plain_files ~f:dep @ List.map compressed_files ~f:Bistro_unix.Cmd.gzdep in
+    match tokens with
+    | [] -> None
+    | _ :: _ -> Some (seq ~sep:"," tokens)
+  in
+  let maybe_opt o = Option.map ~f:(opt o Fn.id) in
+  [
+    maybe_opt "--single" (arg_list fqs fq_gzs) ;
+    maybe_opt "--left" (arg_list fq1s fq1_gzs) ;
+    maybe_opt "--right" (arg_list fq2s fq2_gzs) ;
+  ]
+  |> List.filter_opt
+  |> seq ~sep:" " 
 
 (** https://github.com/trinityrnaseq/trinityrnaseq/wiki/Running-Trinity *)
 let trinity ?(mem = 128) ?no_normalize_reads ?run_as_paired se_or_pe_fq =

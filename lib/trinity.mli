@@ -6,7 +6,7 @@ val trinity :
   ?mem:int ->
   ?no_normalize_reads:bool ->
   ?run_as_paired:bool ->
-  fastq file list SE_or_PE.t ->
+  Fastq_sample.t list ->
   fasta file
 
 val prepare_fastq :
