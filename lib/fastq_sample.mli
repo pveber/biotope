@@ -6,6 +6,11 @@ type t =
 
 val is_single_end : t -> bool
 
+val plain_se : fastq file -> t
+val plain_pe : fastq file -> fastq file -> t
+val compressed_se : fastq gz file -> t
+val compressed_pe : fastq gz file -> fastq gz file -> t
+
 val dep : t -> Shell_dsl.template SE_or_PE.t
 
 val explode : t list ->

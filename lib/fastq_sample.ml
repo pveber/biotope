@@ -11,6 +11,11 @@ let is_single_end = function
   | Fq (Paired_end _)
   | Fq_gz (Paired_end _) -> false
 
+let plain_se x = Fq (SE_or_PE.Single_end x)
+let plain_pe x y = Fq (SE_or_PE.Paired_end (x, y))
+let compressed_se x = Fq_gz (SE_or_PE.Single_end x)
+let compressed_pe x y = Fq_gz (SE_or_PE.Paired_end (x, y))
+
 let dep = function
   | Fq se_or_pe -> SE_or_PE.map se_or_pe ~f:Shell_dsl.dep
   | Fq_gz se_or_pe -> SE_or_PE.map se_or_pe ~f:Bistro_unix.Cmd.gzdep
