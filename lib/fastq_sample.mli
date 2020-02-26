@@ -1,4 +1,5 @@
 open Bistro
+open Biotk
 
 type t =
   | Fq of fastq file SE_or_PE.t
@@ -23,14 +24,18 @@ type source =
   | SRA_dataset of { srr_id : string ;
                      library_type : [`single_end | `paired_end] }
 
+val fastq_of_source : source -> fastq file SE_or_PE.t
+val fastq_gz_of_source : source -> fastq gz file SE_or_PE.t
+val fastq_sample_of_source : source -> t
+
 module type Data = sig
   type t
-  val source : t -> source
+  val source : t -> source List1.t
 end
 
 module Make(Data : Data) : sig
-  val fastq : Data.t -> fastq file SE_or_PE.t
-  val fastq_gz : Data.t -> fastq gz file SE_or_PE.t
-  val fastq_sample : Data.t -> t
-  val fastqc : Data.t -> FastQC.report SE_or_PE.t
+  val fastq : Data.t -> fastq file SE_or_PE.t List1.t
+  val fastq_gz : Data.t -> fastq gz file SE_or_PE.t List1.t
+  val fastq_samples : Data.t -> t List1.t
+  val fastqc : Data.t -> FastQC.report SE_or_PE.t List1.t
 end

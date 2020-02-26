@@ -3,58 +3,6 @@ open Bistro
 open Biotope
 open Biotk
 
-module Fastq_file = struct
-  type t = [
-    | `ES_WT_ChIP_Nanog_Chen2008_1
-    | `ES_WT_ChIP_Nanog_Chen2008_2
-    | `ES_WT_ChIP_Nanog_Chen2008_3
-    | `ES_WT_ChIP_Nanog_Chen2008_4
-    | `ES_WT_ChIP_Nanog_Chen2008_5
-    | `ES_WT_ChIP_Nanog_Chen2008_6
-    | `ES_WT_ChIP_Nanog_Chen2008_7
-    | `ES_WT_ChIP_Nanog_Chen2008_8
-    | `ES_WT_ChIP_Pou5f1_Chen2008_1
-    | `ES_WT_ChIP_Pou5f1_Chen2008_2
-    | `ES_WT_ChIP_Pou5f1_Chen2008_3
-    | `ES_WT_ChIP_Pou5f1_Chen2008_4
-    | `ES_WT_ChIP_Sox2_Chen2008_1
-    | `ES_WT_ChIP_Sox2_Chen2008_2
-    | `ES_WT_ChIP_Sox2_Chen2008_3
-    | `ES_WT_ChIP_Sox2_Chen2008_4
-    | `ES_WT_ChIP_Essrb_Chen2008_1
-    | `ES_WT_ChIP_Essrb_Chen2008_2
-    | `ES_WT_ChIP_Essrb_Chen2008_3
-    | `ES_WT_ChIP_Essrb_Chen2008_4
-  ]
-  [@@deriving show]
-
-  let srr_id = function
-    | `ES_WT_ChIP_Nanog_Chen2008_1 -> "SRR002004"
-    | `ES_WT_ChIP_Nanog_Chen2008_2 -> "SRR002005"
-    | `ES_WT_ChIP_Nanog_Chen2008_3 -> "SRR002006"
-    | `ES_WT_ChIP_Nanog_Chen2008_4 -> "SRR002007"
-    | `ES_WT_ChIP_Nanog_Chen2008_5 -> "SRR002008"
-    | `ES_WT_ChIP_Nanog_Chen2008_6 -> "SRR002009"
-    | `ES_WT_ChIP_Nanog_Chen2008_7 -> "SRR002010"
-    | `ES_WT_ChIP_Nanog_Chen2008_8 -> "SRR002011"
-    | `ES_WT_ChIP_Pou5f1_Chen2008_1 -> "SRR002012"
-    | `ES_WT_ChIP_Pou5f1_Chen2008_2 -> "SRR002013"
-    | `ES_WT_ChIP_Pou5f1_Chen2008_3 -> "SRR002014"
-    | `ES_WT_ChIP_Pou5f1_Chen2008_4 -> "SRR002015"
-    | `ES_WT_ChIP_Sox2_Chen2008_1 -> "SRR002023"
-    | `ES_WT_ChIP_Sox2_Chen2008_2 -> "SRR002024"
-    | `ES_WT_ChIP_Sox2_Chen2008_3 -> "SRR002025"
-    | `ES_WT_ChIP_Sox2_Chen2008_4 -> "SRR002026"
-    | `ES_WT_ChIP_Essrb_Chen2008_1 -> "SRR001992"
-    | `ES_WT_ChIP_Essrb_Chen2008_2 -> "SRR001993"
-    | `ES_WT_ChIP_Essrb_Chen2008_3 -> "SRR001994"
-    | `ES_WT_ChIP_Essrb_Chen2008_4 -> "SRR001995"
-
-  let source x = Fastq_sample.SRA_dataset { srr_id = srr_id x ; library_type = `single_end }
-end
-
-module FQS = Fastq_sample.Make(Fastq_file)
-
 module Sample = struct
   type t = [
     | `ES_WT_ChIP_Nanog_Chen2008
@@ -63,6 +11,15 @@ module Sample = struct
     | `ES_WT_ChIP_Essrb_Chen2008
   ]
   [@@deriving show,enumerate]
+
+  let srr_id = function
+    | `ES_WT_ChIP_Nanog_Chen2008 -> List1.cons "SRR002004" ["SRR002005";"SRR002006";"SRR002007";"SRR002008";"SRR002009";"SRR002010";"SRR002011"]
+    | `ES_WT_ChIP_Pou5f1_Chen2008 -> List1.cons "SRR002012" ["SRR002013";"SRR002014";"SRR002015"]
+    | `ES_WT_ChIP_Sox2_Chen2008 -> List1.cons "SRR002023" ["SRR002024";"SRR002025";"SRR002026"]
+    | `ES_WT_ChIP_Essrb_Chen2008 -> List1.cons "SRR001992" ["SRR001993";"SRR001994";"SRR001995"]
+
+  let source x =
+    List1.map (srr_id x) ~f:(fun srr_id -> Fastq_sample.SRA_dataset { srr_id ; library_type = `single_end })
 
   let string_of_sample = function
     | `ES_WT_ChIP_Nanog_Chen2008 -> "ES_WT_ChIP_Nanog_Chen2008"
@@ -85,21 +42,12 @@ module Sample = struct
   let to_string x = show x
 
   let reference_genome _ = Dnaseq_with_reference_genome.Ucsc_gb `mm10
-
-  let files_of_sample = function
-    | `ES_WT_ChIP_Nanog_Chen2008 ->
-      [`ES_WT_ChIP_Nanog_Chen2008_1 ; `ES_WT_ChIP_Nanog_Chen2008_2 ; `ES_WT_ChIP_Nanog_Chen2008_3 ; `ES_WT_ChIP_Nanog_Chen2008_4 ; `ES_WT_ChIP_Nanog_Chen2008_5 ; `ES_WT_ChIP_Nanog_Chen2008_6 ; `ES_WT_ChIP_Nanog_Chen2008_7 ; `ES_WT_ChIP_Nanog_Chen2008_8]
-    | `ES_WT_ChIP_Pou5f1_Chen2008 ->
-      [`ES_WT_ChIP_Pou5f1_Chen2008_1 ; `ES_WT_ChIP_Pou5f1_Chen2008_2 ; `ES_WT_ChIP_Pou5f1_Chen2008_3 ; `ES_WT_ChIP_Pou5f1_Chen2008_4]
-    | `ES_WT_ChIP_Sox2_Chen2008 ->
-      [`ES_WT_ChIP_Sox2_Chen2008_1 ; `ES_WT_ChIP_Sox2_Chen2008_2 ; `ES_WT_ChIP_Sox2_Chen2008_3 ; `ES_WT_ChIP_Sox2_Chen2008_4]
-    | `ES_WT_ChIP_Essrb_Chen2008 ->
-      [`ES_WT_ChIP_Essrb_Chen2008_1 ; `ES_WT_ChIP_Essrb_Chen2008_2 ; `ES_WT_ChIP_Essrb_Chen2008_3 ; `ES_WT_ChIP_Essrb_Chen2008_4]
-
-  let fastq_samples x =
-    match List.map (files_of_sample x) ~f:FQS.fastq_sample with
-    | h :: t -> List1.cons h t
-    | [] -> assert false
 end
 
-module Dnaseq = Dnaseq_with_reference_genome.Make(Sample)
+module FQS = Fastq_sample.Make(Sample)
+
+module Dnaseq = Dnaseq_with_reference_genome.Make(struct
+    include Sample
+    include FQS
+  end
+  )
