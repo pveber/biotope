@@ -10,6 +10,11 @@ val bowtie :
   ?fastq_format:Fastq.format ->
   ?n:int -> ?v:int ->
   ?maxins:int ->
+  ?additional_samples:Fastq_sample.t list ->
   [`bowtie_index] directory ->
-  #fastq file list SE_or_PE.t ->
+  Fastq_sample.t ->
   sam file
+
+
+val qual_option : Fastq.format -> string
+val bowtie_style_fastq_args : Fastq_sample.t list -> Shell_dsl.template

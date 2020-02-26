@@ -37,19 +37,12 @@ let hisat2
     ?k
     ?minins ?maxins ?orientation ?no_mixed ?no_discordant
     ?seed
+    ?(additional_samples = [])
     index
-    fqs
+    fq
   =
-  let args = match fqs with
-    | SE_or_PE.Single_end fqs ->
-      opt "-U" (list dep ~sep:",") fqs
-    | Paired_end (fqs1, fqs2) ->
-      seq [
-        opt "-1" (list dep ~sep:",") fqs1 ;
-        string " " ;
-        opt "-2" (list dep ~sep:",") fqs2
-      ]
-  in
+  let fq_samples = fq :: additional_samples in
+  let args = Bowtie.bowtie_style_fastq_args fq_samples in
   Workflow.shell ~descr:"hisat2" ~mem:(Workflow.int (4 * 1024)) ~np:8 [
     cmd "hisat2" ~img [
       option (opt "--skip" int) skip ;
@@ -64,8 +57,7 @@ let hisat2
       option (flag string "--no-discordant") no_discordant  ;
       opt "--threads" Fn.id np ;
       option (opt "--seed" int) seed ;
-      option (opt "-q" (Bowtie2.qual_option % string)) fastq_format ;
-
+      option (opt "-q" (Bowtie.qual_option % string)) fastq_format ;
       opt "-x" (fun index -> seq [dep index ; string "/index"]) index ;
       args ;
       opt "-S" Fn.id dest ;

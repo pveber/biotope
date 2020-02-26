@@ -46,5 +46,3 @@ val bowtie2 :
   [`bowtie2_index] directory ->
   Fastq_sample.t ->
   sam file
-
-val qual_option : Fastq.format -> string

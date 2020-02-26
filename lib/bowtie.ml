@@ -16,16 +16,32 @@ let bowtie_build ?packed ?color fa =
     ]
   ]
 
-let bowtie ?l ?e ?m ?fastq_format ?n ?v ?maxins index fastq_files =
-  let args = match fastq_files with
-    | SE_or_PE.Single_end fqs -> list dep ~sep:"," fqs
-    | Paired_end (fqs1, fqs2) ->
-      seq [
-        opt "-1" (list dep ~sep:",") fqs1 ;
-        string " " ;
-        opt "-2" (list dep ~sep:",") fqs2
-      ]
+let bowtie_style_fastq_args fq_samples =
+  let (fqs, fqs1, fqs2), (fqs_gz, fqs1_gz, fqs2_gz) =
+    Fastq_sample.explode fq_samples
   in
+  let fqs = List.map fqs ~f:dep @ List.map fqs_gz ~f:Bistro_unix.Cmd.gzdep in
+  let fqs1 = List.map fqs1 ~f:dep @ List.map fqs1_gz ~f:Bistro_unix.Cmd.gzdep in
+  let fqs2 = List.map fqs2 ~f:dep @ List.map fqs2_gz ~f:Bistro_unix.Cmd.gzdep in
+  List.filter_opt [
+    if List.is_empty fqs then None else Some (opt "-U" (seq ~sep:",") fqs) ;
+    if List.is_empty fqs1 then None else Some (
+        seq [
+          opt "-1" (seq ~sep:",") fqs1 ;
+          string " " ;
+          opt "-2" (seq ~sep:",") fqs2
+        ])
+  ]
+  |> seq ~sep:" "
+
+let qual_option = function
+  | Fastq.Solexa  -> "--solexa-quals"
+  | Fastq.Sanger -> "--phred33-quals"
+  | Fastq. Phred64 -> "--phred64-quals"
+
+let bowtie ?l ?e ?m ?fastq_format ?n ?v ?maxins ?(additional_samples = []) index fq_sample =
+  let fq_samples = fq_sample :: additional_samples in
+  let fq_args = bowtie_style_fastq_args fq_samples in
   Workflow.shell ~descr:"bowtie" ~mem:(Workflow.int (3 * 1024)) ~np:8 [
     cmd "bowtie" ~img [
       string "-S" ;
@@ -34,11 +50,11 @@ let bowtie ?l ?e ?m ?fastq_format ?n ?v ?maxins index fastq_files =
       option (opt "-e" int) e ;
       option (opt "-m" int) m ;
       option (opt "-v" int) v ;
-      option (opt "-q" (Bowtie2.qual_option % string)) fastq_format ;
+      option (opt "-q" (qual_option % string)) fastq_format ;
       opt "-p" Fn.id np ;
       option (opt "--maxins" int) maxins ;
       seq [dep index ; string "/index"] ;
-      args ;
+      fq_args ;
       dest ;
     ]
   ]

@@ -28,11 +28,6 @@ let bowtie2_build ?large_index ?noauto ?packed ?bmax ?bmaxdivn ?dcv ?nodc ?noref
     ]
   ]
 
-let qual_option = function
-  | Fastq.Solexa  -> "--solexa-quals"
-  | Fastq.Sanger -> "--phred33-quals"
-  | Fastq. Phred64 -> "--phred64-quals"
-
 let flag_of_preset mode preset =
   let flag = match preset with
     | `very_fast -> "--very-fast"
@@ -62,24 +57,7 @@ let bowtie2
     ?no_unal ?seed
     ?fastq_format ?(additional_samples = []) index fq_sample =
   let fq_samples = fq_sample :: additional_samples in
-  let args =
-    let (fqs, fqs1, fqs2), (fqs_gz, fqs1_gz, fqs2_gz) =
-      Fastq_sample.explode fq_samples
-    in
-    let fqs = List.map fqs ~f:dep @ List.map fqs_gz ~f:Bistro_unix.Cmd.gzdep in
-    let fqs1 = List.map fqs1 ~f:dep @ List.map fqs1_gz ~f:Bistro_unix.Cmd.gzdep in
-    let fqs2 = List.map fqs2 ~f:dep @ List.map fqs2_gz ~f:Bistro_unix.Cmd.gzdep in
-    List.filter_opt [
-      if List.is_empty fqs then None else Some (opt "-U" (seq ~sep:",") fqs) ;
-      if List.is_empty fqs1 then None else Some (
-          seq [
-              opt "-1" (seq ~sep:",") fqs1 ;
-              string " " ;
-              opt "-2" (seq ~sep:",") fqs2
-            ])
-    ]
-    |> seq ~sep:" "
-  in
+  let args = Bowtie.bowtie_style_fastq_args fq_samples in
   Workflow.shell ~descr:"bowtie2" ~mem:(Workflow.int (3 * 1024)) ~np:8 [
     cmd "bowtie2" ~img [
       option (opt "--skip" int) skip ;
@@ -106,7 +84,7 @@ let bowtie2
       option (flag string "--no-unal") no_unal ;
       opt "--threads" Fn.id np ;
       option (opt "--seed" int) seed ;
-      option (opt "-q" (qual_option % string)) fastq_format ;
+      option (opt "-q" (Bowtie.qual_option % string)) fastq_format ;
       opt "-x" (fun index -> seq [dep index ; string "/index"]) index ;
       args ;
       opt "-S" Fn.id dest ;

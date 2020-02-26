@@ -33,6 +33,7 @@ val hisat2 :
   ?no_mixed:bool ->
   ?no_discordant:bool ->
   ?seed:int ->
+  ?additional_samples:Fastq_sample.t list ->
   [`hisat2_index] directory ->
-  #fastq file list SE_or_PE.t ->
+  Fastq_sample.t ->
   sam file

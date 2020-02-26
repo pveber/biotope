@@ -3,6 +3,7 @@
    Datasets: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE29506
 *)
 open Core
+open Biotk
 open Biotope
 open Bistro_utils
 
@@ -25,17 +26,19 @@ let genome = Ucsc_gb.genome_sequence `sacCer2
 let genome_2bit = Ucsc_gb.genome_2bit_sequence `sacCer2
 
 let srr_id = function
-  | `ChIP_Pho4_noPi -> [ "SRR217304" ; "SRR217305" ]
-  | `Input_WT_NoPi -> [ "SRR217324" ]
+  | `ChIP_Pho4_noPi -> List1.cons "SRR217304" [ "SRR217305" ]
+  | `Input_WT_NoPi -> List1.singleton "SRR217324"
 
-let fastq x = List.map (srr_id x) ~f:(fun id ->
+let fastq x = List1.map (srr_id x) ~f:(fun id ->
     Sra_toolkit.fastq_dump (`id id)
+    |> Fastq_sample.plain_se
   )
 
 let bowtie_index = Bowtie.bowtie_build genome
 
 let mapped_reads x =
-  Bowtie.bowtie ~v:1 bowtie_index (SE_or_PE.Single_end (fastq x))
+  let Cons (fq, additional_samples) = fastq x in
+  Bowtie.bowtie ~v:1 bowtie_index ~additional_samples fq
 
 let mapped_reads_bam x =
   Samtools.indexed_bam_of_sam (mapped_reads x)
