@@ -42,7 +42,7 @@ let hisat2
     fq
   =
   let fq_samples = fq :: additional_samples in
-  let args = Bowtie.bowtie_style_fastq_args fq_samples in
+  let args = Bowtie.fastq_args `V2 fq_samples in
   Workflow.shell ~descr:"hisat2" ~mem:(Workflow.int (4 * 1024)) ~np:8 [
     cmd "hisat2" ~img [
       option (opt "--skip" int) skip ;

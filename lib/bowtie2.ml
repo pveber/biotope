@@ -57,7 +57,7 @@ let bowtie2
     ?no_unal ?seed
     ?fastq_format ?(additional_samples = []) index fq_sample =
   let fq_samples = fq_sample :: additional_samples in
-  let args = Bowtie.bowtie_style_fastq_args fq_samples in
+  let args = Bowtie.fastq_args `V2 fq_samples in
   Workflow.shell ~descr:"bowtie2" ~mem:(Workflow.int (3 * 1024)) ~np:8 [
     cmd "bowtie2" ~img [
       option (opt "--skip" int) skip ;

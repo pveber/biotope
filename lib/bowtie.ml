@@ -16,15 +16,19 @@ let bowtie_build ?packed ?color fa =
     ]
   ]
 
-let bowtie_style_fastq_args fq_samples =
+let fastq_args version fq_samples =
   let (fqs, fqs1, fqs2), (fqs_gz, fqs1_gz, fqs2_gz) =
     Fastq_sample.explode fq_samples
   in
   let fqs = List.map fqs ~f:dep @ List.map fqs_gz ~f:Bistro_unix.Cmd.gzdep in
   let fqs1 = List.map fqs1 ~f:dep @ List.map fqs1_gz ~f:Bistro_unix.Cmd.gzdep in
   let fqs2 = List.map fqs2 ~f:dep @ List.map fqs2_gz ~f:Bistro_unix.Cmd.gzdep in
+  let single_end_option = match version with
+    | `V1 -> ""
+    | `V2 -> "-U"
+  in
   List.filter_opt [
-    if List.is_empty fqs then None else Some (opt "-U" (seq ~sep:",") fqs) ;
+    if List.is_empty fqs then None else Some (opt single_end_option (seq ~sep:",") fqs) ;
     if List.is_empty fqs1 then None else Some (
         seq [
           opt "-1" (seq ~sep:",") fqs1 ;
@@ -41,7 +45,7 @@ let qual_option = function
 
 let bowtie ?l ?e ?m ?fastq_format ?n ?v ?maxins ?(additional_samples = []) index fq_sample =
   let fq_samples = fq_sample :: additional_samples in
-  let fq_args = bowtie_style_fastq_args fq_samples in
+  let fq_args = fastq_args `V1 fq_samples in
   Workflow.shell ~descr:"bowtie" ~mem:(Workflow.int (3 * 1024)) ~np:8 [
     cmd "bowtie" ~img [
       string "-S" ;

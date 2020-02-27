@@ -17,4 +17,7 @@ val bowtie :
 
 
 val qual_option : Fastq.format -> string
-val bowtie_style_fastq_args : Fastq_sample.t list -> Shell_dsl.template
+val fastq_args :
+  [`V1 | `V2] ->
+  Fastq_sample.t list ->
+  Shell_dsl.template
