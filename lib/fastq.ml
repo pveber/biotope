@@ -22,3 +22,11 @@ let head n fq =
       dep fq ;
     ]
   ]
+
+let zhead n fq_gz =
+  Workflow.shell ~descr:"fastq.zhead" [
+    cmd "head" ~stdout:dest [
+      opt "-n" int (n * 4) ;
+      Bistro_unix.Cmd.gzdep fq_gz ;
+    ]
+  ]
