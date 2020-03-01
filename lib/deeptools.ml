@@ -206,14 +206,39 @@ let multibamsummary_bed ?region ?blacklist ?(threads = 1)
       option (flag string "--exonID") exonid ;
       option (flag string "--transcript_id_designator") transcriptiddesignator ;
       opt "--numberOfProcessors" Fn.id np ;
-      string "--BED" ;
-      (dep bed) ;
+      opt "--BED" dep bed ;
       opt "--bamfiles"
         (list (fun bam -> dep (Samtools.indexed_bam_to_bam bam)) ~sep:" ")
         indexed_bams ;
       opt "--outFileName" Fn.id dest ;
     ]
   ]
+
+let multibigwigsummary_bed
+    ?labels ?chromosomesToSkip ?region ?blacklist ?(threads = 1)
+    ?metagene ?transcriptid ?exonid ?transcriptiddesignator
+    bed bigwigs =
+  let inner =
+    Workflow.shell ~descr:"multibigwigsummary_bed" ~np:threads [
+      mkdir_p dest ;
+      cmd "multiBigwigSummary BED-file" ~img [
+        option (opt "--labels" (list string ~sep:" ")) labels ;
+        option (opt "--chromosomesToSkip" (list string ~sep:" ")) chromosomesToSkip ;
+        option (opt "--region" string) region ;
+        option (opt "--blackListFileName" dep) blacklist ;
+        opt "--outRawCounts" Fn.id (dest // "summary.tsv") ;
+        option (flag string "--metagene") metagene ;
+        option (flag string "--transcriptID") transcriptid ;
+        option (flag string "--exonID") exonid ;
+        option (flag string "--transcript_id_designator") transcriptiddesignator ;
+        opt "--BED" dep bed ;
+        opt "--bwfiles" (list dep ~sep:" ") bigwigs ;
+        opt "--outFileName" Fn.id (dest // "summary.npy.gz") ;
+      ]
+    ]
+  in
+  let f x = Workflow.select inner [x] in
+  f "summary.npy.gz", f "summary.tsv"
 
 let reference_point_enum x =
   (match x with

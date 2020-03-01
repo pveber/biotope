@@ -119,6 +119,20 @@ val multibamsummary_bed :
   [`indexed_bam] directory list ->
   compressed_numpy_array file
 
+val multibigwigsummary_bed :
+  ?labels:string list ->
+  ?chromosomesToSkip:string list ->
+  ?region:string ->
+  ?blacklist:#bed3 file ->
+  ?threads:int ->
+  ?metagene:bool ->
+  ?transcriptid:bool ->
+  ?exonid:bool ->
+  ?transcriptiddesignator:bool->
+  #bed3 file ->
+  [`indexed_bam] directory list ->
+  compressed_numpy_array file * tsv file
+
 class type deeptools_matrix = object
   inherit binary_file
   method format : [`deeptools_matrix]
