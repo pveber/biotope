@@ -130,7 +130,7 @@ val multibigwigsummary_bed :
   ?exonid:bool ->
   ?transcriptiddesignator:bool->
   #bed3 file ->
-  [`indexed_bam] directory list ->
+  Ucsc_gb.bigWig file list ->
   compressed_numpy_array file * tsv file
 
 class type deeptools_matrix = object
