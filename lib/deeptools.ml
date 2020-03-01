@@ -484,3 +484,35 @@ let plotEnrichment
       opt "--plotFileFormat" string (ext_of_format output_format) ;
     ]
   ]
+
+let plotFingerprint
+    ?extendReads ?ignoreDuplicates ?minMappingQuality ?centerReads
+    ?samFlagInclude ?samFlagExclude ?minFragmentLength ?maxFragmentLength
+    ?labels ?binSize ?numberOfSamples ?plotTitle ?skipZeros ?region
+    ?blackList ?(numberOfProcessors = 1)
+    output_format bams
+  =
+  Workflow.shell ~descr:"deeptools.plotFingerprint" ~np:numberOfProcessors [
+    cmd "plotFingerprint" ~img [
+      option (flag string "--extendReads") extendReads ;
+      option (flag string "--ignoreDuplicates") ignoreDuplicates ;
+      option (opt "--minMappingQuality" int) minMappingQuality ;
+      option (flag string "--centerReads") centerReads ;
+      option (opt "--samFlagInclude" int) samFlagInclude ;
+      option (opt "--samFlagExclude" int) samFlagExclude ;
+      option (opt "--minFragmentLength" int) minFragmentLength ;
+      option (opt "--maxFragmentLength" int) maxFragmentLength ;
+      option (opt "--blackListFileName" dep) blackList ;
+      opt "--numberOfProcessors" Fn.id np ;
+      opt "--bamfiles" (list ~sep:" " (fun x -> dep (Samtools.indexed_bam_to_bam x))) bams ;
+      opt "--plotFile" Fn.id dest ;
+      opt "--plotFileFormat" string (ext_of_format output_format) ;
+      option (opt "--labels" (list ~sep:" " (string % quote ~using:'"'))) labels ;
+      option (opt "--plotTitle" (string % quote ~using:'"')) plotTitle ;
+      option (flag string "--skipZeros") skipZeros ;
+      option (opt "--region" string) region ;
+      opt "--numberOfProcessors" Fn.id np ;
+      option (opt "--binSize" int) binSize ;
+      option (opt "--numberOfSamples" int) numberOfSamples ;
+    ]
+  ]

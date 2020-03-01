@@ -252,3 +252,24 @@ val plotEnrichment :
   beds:#bed3 file list ->
   'a img_format ->
   'a file
+
+val plotFingerprint :
+  ?extendReads:bool ->
+  ?ignoreDuplicates:bool ->
+  ?minMappingQuality:int ->
+  ?centerReads:bool ->
+  ?samFlagInclude:int ->
+  ?samFlagExclude:int ->
+  ?minFragmentLength:int ->
+  ?maxFragmentLength:int ->
+  ?labels:string list ->
+  ?binSize:int ->
+  ?numberOfSamples:int ->
+  ?plotTitle:string ->
+  ?skipZeros:bool ->
+  ?region:string ->
+  ?blackList:#bed3 file ->
+  ?numberOfProcessors:int ->
+  'a img_format ->
+  [`indexed_bam] directory list ->
+  'a file
