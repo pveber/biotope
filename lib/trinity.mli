@@ -4,6 +4,7 @@ val img : Shell_dsl.container_image list
 
 val trinity :
   ?mem:int ->
+  ?threads:int ->
   ?no_normalize_reads:bool ->
   ?run_as_paired:bool ->
   Fastq_sample.t list ->

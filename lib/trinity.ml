@@ -19,12 +19,12 @@ let fqs_option_template fastq_samples =
     maybe_opt "--right" (arg_list fq2s fq2_gzs) ;
   ]
   |> List.filter_opt
-  |> seq ~sep:" " 
+  |> seq ~sep:" "
 
 (** https://github.com/trinityrnaseq/trinityrnaseq/wiki/Running-Trinity *)
-let trinity ?(mem = 128) ?no_normalize_reads ?run_as_paired se_or_pe_fq =
+let trinity ?(mem = 128) ?(threads = 4) ?no_normalize_reads ?run_as_paired se_or_pe_fq =
   let tmp_dest = tmp // "trinity" in
-  Workflow.shell ~descr:"trinity" ~np:32 ~mem:(Workflow.int (mem * 1024)) [
+  Workflow.shell ~descr:"trinity" ~np:threads ~mem:(Workflow.int (mem * 1024)) [
     mkdir_p tmp ;
     cmd "Trinity" ~img ~stdout:(string "/dev/null")[
       string "--seqType fq" ;
