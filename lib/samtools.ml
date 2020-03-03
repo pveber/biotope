@@ -108,3 +108,12 @@ let flagstats sam_or_bam =
       dep sam_or_bam ;
     ]
   ]
+
+let rmdup ?single_end indexed_bam =
+  Workflow.shell ~descr:"samtools.rmdup" [
+    samtools "rmdup" [
+      option (flag string "-s") single_end ;
+      dep (indexed_bam_to_bam indexed_bam) ;
+      dest ;
+    ]
+  ]

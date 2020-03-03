@@ -43,3 +43,8 @@ val fasta_of_indexed_fasta :
 val flagstats :
   < regular_file_t ; format : [< `bam | `sam] ; .. > file ->
   text file
+
+val rmdup :
+  ?single_end:bool ->
+  [`indexed_bam] directory ->
+  bam file
