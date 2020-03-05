@@ -40,7 +40,7 @@ val faidx :
 val fasta_of_indexed_fasta :
   [`indexed_fasta] directory -> fasta file
 
-val flagstats :
+val flagstat :
   < regular_file_t ; format : [< `bam | `sam] ; .. > file ->
   text file
 

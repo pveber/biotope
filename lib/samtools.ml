@@ -102,9 +102,9 @@ let faidx fa =
 
 let fasta_of_indexed_fasta dir = Workflow.select dir ["sequences.fa"]
 
-let flagstats sam_or_bam =
-  Workflow.shell ~descr:"samtools.flagstats" [
-    samtools "flagstats" ~stdout:dest [
+let flagstat sam_or_bam =
+  Workflow.shell ~descr:"samtools.flagstat" [
+    samtools "flagstat" ~stdout:dest [
       dep sam_or_bam ;
     ]
   ]
