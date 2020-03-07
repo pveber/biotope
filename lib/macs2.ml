@@ -20,13 +20,16 @@ let pileup ?extsize ?both_direction bam =
 type _ format =
   | Sam
   | Bam
+  | BamPE
 
 let sam = Sam
 let bam = Bam
+let bampe = BamPE
 
 let opt_of_format = function
   | Sam -> "SAM"
   | Bam -> "BAM"
+  | BamPE -> "BAMPE"
 
 type gsize = [`hs | `mm | `ce | `dm | `gsize of int]
 

@@ -12,6 +12,7 @@ type _ format
 
 val sam : sam format
 val bam : bam format
+val bampe : bam format
 
 val callpeak :
   ?pvalue:float ->
