@@ -5,5 +5,5 @@ module Params = struct
   let mem = 8
 end
 
-module T = Toplevel_eval.Make(Params)()
+module T = Bistro_utils.Toplevel_eval.Make(Params)()
 open T
