@@ -2,7 +2,7 @@ open Core_kernel
 open Bistro
 open Bistro.Shell_dsl
 
-let img = [ docker_image ~account:"pveber" ~name:"trinity" ~tag:"2.5.1" () ]
+let img = [ docker_image ~account:"pveber" ~name:"trinity" ~tag:"2.9.1" () ]
 
 let fqs_option_template fastq_samples =
   let (fqs, fq1s, fq2s), (fq_gzs, fq1_gzs, fq2_gzs) = Fastq_sample.explode fastq_samples in
