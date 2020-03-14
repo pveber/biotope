@@ -7,6 +7,8 @@ val trinity :
   ?threads:int ->
   ?no_normalize_reads:bool ->
   ?run_as_paired:bool ->
+  ?min_kmer_cov:int ->
+  ?ss_lib_type:[`R | `F | `RF | `FR] ->
   Fastq_sample.t list ->
   fasta file
 

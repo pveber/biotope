@@ -21,8 +21,18 @@ let fqs_option_template fastq_samples =
   |> List.filter_opt
   |> seq ~sep:" "
 
+let ss_lib_type_option o =
+  opt "--SS_lib_type" string
+    (match o with
+     | `R -> "R"
+     | `F -> "F"
+     | `RF -> "RF"
+     | `FR -> "FR")
+
 (** https://github.com/trinityrnaseq/trinityrnaseq/wiki/Running-Trinity *)
-let trinity ?(mem = 128) ?(threads = 4) ?no_normalize_reads ?run_as_paired se_or_pe_fq =
+let trinity ?(mem = 128) ?(threads = 4) ?no_normalize_reads ?run_as_paired
+    ?min_kmer_cov ?ss_lib_type
+    se_or_pe_fq = 
   let tmp_dest = tmp // "trinity" in
   Workflow.shell ~descr:"trinity" ~np:threads ~mem:(Workflow.int (mem * 1024)) [
     mkdir_p tmp ;
@@ -31,6 +41,8 @@ let trinity ?(mem = 128) ?(threads = 4) ?no_normalize_reads ?run_as_paired se_or
       fqs_option_template se_or_pe_fq ;
       option (flag string "--no_normalize_reads") no_normalize_reads ;
       option (flag string "--run_as_paired") run_as_paired ;
+      option (opt "--min_kmer_cov" int) min_kmer_cov ;
+      option ss_lib_type_option ss_lib_type ;
       opt "--CPU" ident np ;
       opt "--max_memory" ident (seq [ string "$((" ; Bistro.Shell_dsl.mem ; string " / 1024))G" ]) ;
       opt "--output" ident tmp_dest ;
