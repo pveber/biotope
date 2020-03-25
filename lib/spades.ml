@@ -8,7 +8,7 @@ let img = [ docker_image ~account:"pveber" ~name:"spades" ~tag:"3.14.0" () ]
 let renamings (ones, twos) =
   let f side i x =
     let id = sprintf "pe%d-%d" (i + 1) side in
-    let new_name = seq ~sep:"/" [ tmp ; string (id ^ ".fq") ] in
+    let new_name = seq ~sep:"/" [ tmp ; string (id ^ ".fq.gz") ] in
     let opt = opt (sprintf "--pe%d-%d" (i + 1) side) Fn.id new_name in
     let cmd = cmd "ln" [ string "-s" ; dep x ; new_name ] in
     opt, cmd

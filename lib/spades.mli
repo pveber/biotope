@@ -1,9 +1,11 @@
+(** {{http://cab.spbu.ru/files/release3.14.0/manual.html}SPADES assembler} *)
+
 open Bistro
 
 val spades :
   ?single_cell:bool ->
   ?iontorrent:bool ->
-  ?pe:fastq file list * fastq file list ->
+  ?pe:fastq gz file list * fastq gz file list ->
   ?threads:int ->
   ?memory:int ->
   unit ->
@@ -13,7 +15,7 @@ val contigs : [`spades] directory -> fasta file
 val scaffolds : [`spades] directory -> fasta file
 
 val rnaspades :
-  ?pe:fastq file list * fastq file list ->
+  ?pe:fastq gz file list * fastq gz file list ->
   ?threads:int ->
   ?memory:int ->
   unit ->
