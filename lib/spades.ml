@@ -2,7 +2,7 @@ open Core_kernel
 open Bistro
 open Bistro.Shell_dsl
 
-let img = [ docker_image ~account:"pveber" ~name:"spades" ~tag:"3.9.1" () ]
+let img = [ docker_image ~account:"pveber" ~name:"spades" ~tag:"3.14.0" () ]
 
 (* spades insists on reading file extensions~ *)
 let renamings (ones, twos) =
@@ -50,3 +50,37 @@ let spades
 
 let contigs x = Workflow.select x ["contigs.fasta"]
 let scaffolds x = Workflow.select x ["scaffolds.fasta"]
+
+let strandness = function
+  | `rf -> string "rf"
+  | `fr -> string "fr"
+
+let rnaspades
+    ?pe ?(threads = 4) ?(memory = 10) ?ss
+    ()
+  =
+  let pe_args, ln_commands = match pe with
+    | None -> None, []
+    | Some files -> renamings files
+  in
+  Workflow.shell ~np:threads ~mem:(Workflow.int (memory * 1024)) ~descr:"rnaspades" [
+    mkdir_p tmp ;
+    mkdir_p dest ;
+    within_container img (
+      and_list (
+        ln_commands @ [
+          cmd "rnaspades.py" ~img [
+            opt "--threads" Fn.id np ;
+            opt "--memory" Fn.id (seq [ string "$((" ; mem ; string " / 1024))" ]) ;
+            option (opt "--ss" strandness) ss ;
+            option Fn.id pe_args ;
+            opt "-o" Fn.id dest ;
+          ]
+        ]
+      )
+    )
+  ]
+
+let transcripts x = Workflow.select x ["transcripts.fasta"]
+let hard_filtered_transcripts x = Workflow.select x ["hard_filtered_transcripts.fasta"]
+let soft_filtered_transcripts x = Workflow.select x ["soft_filtered_transcripts.fasta"]
