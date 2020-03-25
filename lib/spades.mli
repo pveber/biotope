@@ -18,6 +18,7 @@ val rnaspades :
   ?pe:fastq gz file list * fastq gz file list ->
   ?threads:int ->
   ?memory:int ->
+  ?ss:[`fr | `rf] ->
   unit ->
   [`rnaspades] directory
 
