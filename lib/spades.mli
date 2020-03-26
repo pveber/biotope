@@ -5,21 +5,19 @@ open Bistro
 val spades :
   ?single_cell:bool ->
   ?iontorrent:bool ->
-  ?pe:fastq gz file list * fastq gz file list ->
   ?threads:int ->
   ?memory:int ->
-  unit ->
+  Fastq_sample.t list ->
   [`spades] directory
 
 val contigs : [`spades] directory -> fasta file
 val scaffolds : [`spades] directory -> fasta file
 
 val rnaspades :
-  ?pe:fastq gz file list * fastq gz file list ->
   ?threads:int ->
   ?memory:int ->
   ?ss:[`fr | `rf] ->
-  unit ->
+  Fastq_sample.t list ->
   [`rnaspades] directory
 
 val transcripts : [`rnaspades] directory -> fasta file
