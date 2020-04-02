@@ -105,5 +105,6 @@ val hpc_phylip :
   phylip file ->
   [`raxmlHPC] directory
 
+val result : [`raxmlHPC] directory -> newick file
 val best_tree : [`raxmlHPC] directory -> newick file
 val distances : [`raxmlHPC] directory -> text file

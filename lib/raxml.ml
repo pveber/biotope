@@ -217,5 +217,6 @@ let hpc
 let hpc_fasta = hpc
 let hpc_phylip = hpc
 
+let result dir = Workflow.select dir ["RAxML_result." ^ suffix]
 let best_tree dir = Workflow.select dir ["RAxML_bestTree." ^ suffix]
 let distances dir = Workflow.select dir ["RAxML_distances." ^ suffix]
