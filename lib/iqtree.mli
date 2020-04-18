@@ -1,6 +1,15 @@
 open Bistro
 open Formats
 
+type sequence_type = [
+  | `DNA
+  | `AA
+  | `BIN
+  | `MORPH
+  | `CODON of int
+  | `NT2AA
+]
+
 type dna_model = [
   | `JC69
   | `F81
@@ -121,5 +130,10 @@ val iqtree :
   ?n:int ->
   ?m:model_spec ->
   ?z:newick file ->
+  ?st:sequence_type ->
+  ?spp:nexus file ->
   [`phylip of phylip file | `fasta of fasta file] ->
-  newick file
+  [`iqtree] directory
+
+val treefile : [`iqtree] directory -> newick file
+val report :  [`iqtree] directory -> text file

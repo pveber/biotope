@@ -10,6 +10,27 @@ let tree_token t =
   | `BIONJ -> string "BIONJ"
   | `RANDOM -> string "RANDOM"
 
+
+type sequence_type = [
+  | `DNA
+  | `AA
+  | `BIN
+  | `MORPH
+  | `CODON of int
+  | `NT2AA
+]
+
+let sequence_type_token st =
+  string (
+    match st with
+    | `AA -> "AA"
+    | `BIN -> "BIN"
+    | `MORPH -> "MORPH"
+    | `CODON i -> sprintf "CODON%d" i
+    | `NT2AA -> "NT2AA"
+    | `DNA -> "DNA"
+  )
+
 type dna_model = [
   | `JC69
   | `F81
@@ -232,32 +253,35 @@ type model_spec =
 
 let model_spec ?freq_type ?rate_type m = m, freq_type, rate_type
 
-(* FIXME: try with pre option *)
-
-let iqtree ?t ?te ?o ?(nt = 1) ?seed ?n ?m ?z ali =
+let iqtree ?t ?te ?o ?(nt = 1) ?seed ?n ?m ?z ?st ?spp ali =
   let ali_dep = match ali with
     | `phylip f -> dep f
     | `fasta f -> dep f
   in
-  let tmp_ali_fn = "data.fa" in
-  let tmp_ali = tmp // tmp_ali_fn in
   Workflow.shell ~descr:"iqtree" ~np:nt [
+    mkdir_p dest ;
     within_container img (
       and_list [
-        cmd "ln" [ string "-s" ; Fn.id ali_dep ; tmp_ali ] ;
-        cmd ~img "/usr/local/bin/iqtree" [ (* iqtree save its output right next to its input, hence this mess *)
-          opt "-s" Fn.id tmp_ali ;
+        cmd ~img "/usr/local/bin/iqtree" [
+          opt "-s" Fn.id ali_dep ;
           option (opt "-t" tree_token) t ;
           option (opt "-te" dep) te ;
           option (opt "-o" string) o ;
-          (* opt "-pre" Fn.id dest ; *)
+          opt "-pre" Fn.id (dest // "iqtree") ;
           opt "-nt" Fn.id np ;
           option (opt "-seed" int) seed ;
           option (opt "-n" int) n ;
           option (opt "-m" model_spec_token) m ;
           option (opt "-z" dep) z ;
+          option (opt "-st" sequence_type_token) st ;
+          option (opt "-spp" dep) spp ;
         ] ;
-        mv (tmp // (tmp_ali_fn ^ ".treefile")) dest ;
       ]
     )
   ]
+
+let treefile dir =
+  Workflow.select dir ["iqtree.treefile"]
+
+let report dir =
+  Workflow.select dir ["iqtree.iqtree"]

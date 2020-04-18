@@ -10,6 +10,11 @@ class type newick = object
   method format : [`newick]
 end
 
+class type nexus = object
+  inherit text
+  method format : [`nexus]
+end
+
 class type phylip = object
   inherit text
   method format : [`phylip]
