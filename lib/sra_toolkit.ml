@@ -9,22 +9,31 @@ let sra_of_input = function
   | `idw w -> string_dep w
   | `file w -> dep w
 
-let fastq_dump sra =
+let fastq_dump ?minReadLen sra =
   Workflow.shell ~descr:"sratoolkit.fastq_dump" [
-    cmd ~img "fastq-dump" [ string "-Z" ; sra_of_input sra ] ~stdout:dest
+    cmd ~img "fastq-dump" ~stdout:dest [
+      option (opt "-M" int) minReadLen ;
+      string "-Z" ; sra_of_input sra ;
+    ]
   ]
 
-let fastq_dump_gz input =
+let fastq_dump_gz ?minReadLen input =
   let sra = sra_of_input input in
   Workflow.shell ~descr:"sratoolkit.fastq_dump" [
-    cmd ~img "fastq-dump" [ string "--gzip" ; string "-Z" ; sra ] ~stdout:dest
+    cmd ~img "fastq-dump" [
+      option (opt "-M" int) minReadLen ;
+      string "--gzip" ;
+      string "-Z" ;
+      sra
+    ] ~stdout:dest
   ]
 
-let fastq_dump_pe sra =
+let fastq_dump_pe ?minReadLen sra =
   let dir =
     Workflow.shell ~descr:"sratoolkit.fastq_dump" [
       mkdir_p dest ;
       cmd ~img "fastq-dump" [
+        option (opt "-M" int) minReadLen ;
         opt "-O" Fn.id dest ;
         string "--split-files" ;
         dep sra
@@ -37,12 +46,13 @@ let fastq_dump_pe sra =
   Workflow.select dir ["reads_2.fastq"]
 
 
-let fastq_dump_pe_gz input =
+let fastq_dump_pe_gz ?minReadLen input =
   let sra = sra_of_input input in
   let dir =
     Workflow.shell ~descr:"sratoolkit.fastq_dump" [
       mkdir_p dest ;
       cmd ~img "fastq-dump" [
+        option (opt "-M" int) minReadLen ;
         opt "-O" Fn.id dest ;
         string "--split-files" ;
         string "--gzip" ;
@@ -55,9 +65,10 @@ let fastq_dump_pe_gz input =
   Workflow.select dir ["reads_1.fq.gz"],
   Workflow.select dir ["reads_2.fq.gz"]
 
-let fastq_dump_to_fasta sra =
+let fastq_dump_to_fasta ?minReadLen sra =
   Workflow.shell ~descr:"sratoolkit.fastq_dump" [
     cmd ~img "fastq-dump" [
+      option (opt "-M" int) minReadLen ;
       string "-Z" ;
       string "--fasta" ;
       dep sra
