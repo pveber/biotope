@@ -2,7 +2,7 @@ open Core_kernel
 open Bistro
 open Bistro.Shell_dsl
 
-let img = [ docker_image ~account:"pveber" ~name:"sra-toolkit" ~tag:"2.8.0" () ]
+let img = [ docker_image ~account:"pegi3s" ~name:"sratoolkit" ~tag:"2.10.0" () ]
 
 let sra_of_input = function
   | `id id -> string id
