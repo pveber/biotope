@@ -53,10 +53,10 @@ let rec fastq_gz_of_source = function
   | SRA_dataset { srr_id ; library_type } ->
     match library_type with
     | `paired_end ->
-      let r1, r2 = Sra_toolkit.fastq_dump_pe_gz (`id srr_id) in
+      let r1, r2 = Sra_toolkit.(fastq_dump_pe fastq_gz) (`id srr_id) in
       Paired_end (r1, r2)
     | `single_end ->
-      Single_end (Sra_toolkit.fastq_dump_gz (`id srr_id))
+      Single_end (Sra_toolkit.(fastq_dump fastq_gz) (`id srr_id))
 
 and fastq_of_source = function
   | Fastq_url uris ->

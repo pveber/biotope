@@ -137,10 +137,10 @@ end
 module Sra_toolkit = struct
   let fastq_dump ~id ~paired =
     if paired then
-      let r1, r2 = Sra_toolkit.fastq_dump_pe_gz (`id id) in
+      let r1, r2 = Sra_toolkit.(fastq_dump_pe fastq_gz) (`id id) in
       Fastq.Gziped (SE_or_PE.Paired_end (r1, r2))
     else
-      Fastq.Gziped (SE_or_PE.Single_end (Sra_toolkit.fastq_dump_gz (`id id)))
+      Fastq.Gziped (SE_or_PE.Single_end (Sra_toolkit.(fastq_dump fastq_gz) (`id id)))
 end
 
 module FastQC = struct

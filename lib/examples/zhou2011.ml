@@ -85,7 +85,7 @@ let fastq x =
   srr_id x
   |> List1.of_list_exn
   |> List1.map ~f:(fun id ->
-    Sra_toolkit.fastq_dump_gz (`id id)
+    Sra_toolkit.(fastq_dump fastq_gz) (`id id)
     |> Fastq_sample.compressed_se
   )
 
