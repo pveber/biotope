@@ -65,7 +65,7 @@ and fastq_of_source = function
   | SRA_dataset _ as s ->
     SE_or_PE.map ~f:Bistro_unix.gunzip (fastq_gz_of_source s)
 
-let fastq_sample_of_source s =
+let of_source s =
   match s with
   | Fastq_url _ -> Fq (fastq_of_source s)
   | SRA_dataset _
@@ -80,7 +80,7 @@ module Make(Data : Data) = struct
   let fastq_gz x = List1.map (Data.source x) ~f:fastq_gz_of_source
   let fastq x = List1.map (Data.source x) ~f:fastq_of_source
 
-  let fastq_samples s = List1.map (Data.source s) ~f:fastq_sample_of_source
+  let fastq_samples s = List1.map (Data.source s) ~f:of_source
 
   let fastqc x =
     List1.map (fastq_gz x) ~f:(SE_or_PE.map ~f:FastQC.fastqc_gz)

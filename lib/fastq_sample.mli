@@ -26,7 +26,7 @@ type source =
 
 val fastq_of_source : source -> fastq file SE_or_PE.t
 val fastq_gz_of_source : source -> fastq gz file SE_or_PE.t
-val fastq_sample_of_source : source -> t
+val of_source : source -> t
 
 module type Data = sig
   type t
