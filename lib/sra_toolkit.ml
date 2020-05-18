@@ -66,16 +66,22 @@ let fastq_dump ?minReadLen ?_N_ ?_X_ ?defline_qual ?defline_seq output input =
   let descr = "sratoolkit.fastq_dump" in
   Workflow.shell ~descr [ fastq_dump_call SE output input ]
 
+let ext_output = function
+  | Fasta -> "fasta"
+  | Fastq -> "fastq"
+  | Fastq_gz -> "fastq.gz"
+
 let fastq_dump_pe ?minReadLen ?_N_ ?_X_ ?defline_qual ?defline_seq output input =
   let fastq_dump_call = call ?minReadLen ?_N_ ?_X_ ?defline_seq ?defline_qual in
+  let ext = ext_output output in
   let descr = "sratoolkit.fastq_dump" in
   let dir =
     Workflow.shell ~descr [
       mkdir_p dest ;
       fastq_dump_call PE output input ;
-      mv (dest // "*_1.fastq") (dest // "reads_1.fastq") ;
-      mv (dest // "*_2.fastq") (dest // "reads_2.fastq") ;
+      mv (dest // ("*_1."^ext)) (dest // ("reads_1."^ext)) ;
+      mv (dest // ("*_2."^ext)) (dest // ("reads_2."^ext)) ;
     ]
   in
-  Workflow.select dir ["reads_1.fastq"],
-  Workflow.select dir ["reads_2.fastq"]
+  Workflow.select dir ["reads_1."^ext],
+  Workflow.select dir ["reads_2."^ext]
