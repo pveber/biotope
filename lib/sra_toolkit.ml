@@ -20,7 +20,9 @@ let sra_of_input = function
   | `idw w -> string_dep w
   | `file w -> dep w
 
-let q s = quote ~using:'\'' (string s)
+(*let q s = quote ~using:'\"' (string s)*)
+
+let protect s = quote ~using:'\"' (string (Str.global_replace (Str.regexp_string "$") "\\$" s))
 
 let call ?minReadLen ?defline_seq ?defline_qual ?_N_ ?_X_ se_or_pe output input =
   let stdout = match se_or_pe with
@@ -33,8 +35,8 @@ let call ?minReadLen ?defline_seq ?defline_qual ?_N_ ?_X_ se_or_pe output input 
   in
   cmd ~img "fastq-dump" ?stdout [
     option (opt "-M" int) minReadLen ;
-    option (opt "--defline-seq" q) defline_seq ;
-    option (opt "--defline-qual" q) defline_qual ;
+    option (opt "--defline-seq" protect) defline_seq ;
+    option (opt "--defline-qual" protect) defline_qual ;
     option (opt "-N" int) _N_ ;
     option (opt "-X" int) _X_ ;
     option (opt "-O" Fn.id) _O_ ;
