@@ -38,7 +38,11 @@ let call ?minReadLen ?defline_seq ?defline_qual ?_N_ ?_X_ se_or_pe output input 
     option (opt "-N" int) _N_ ;
     option (opt "-X" int) _X_ ;
     option (opt "-O" Fn.id) _O_ ;
-    string "-Z" ;
+    option string (
+      match se_or_pe with
+      | SE -> Some "-Z"
+      | PE -> None
+    ) ;
     option string (
       match output with
       | Fasta -> Some "--fasta"
