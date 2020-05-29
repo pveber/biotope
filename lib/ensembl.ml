@@ -71,3 +71,11 @@ let cdna ~release ~species =
       (lab_label_of_genome (ucsc_reference_genome ~release ~species))
   in
   Bistro_unix.wget url
+
+let dna ~release ~species =
+  let url = sprintf "ftp://ftp.ensembl.org/pub/release-%d/fasta/%s/dna/%s.%s.dna.primary_assembly.fa.gz"
+      release (string_of_species species)
+      (String.capitalize (string_of_species species))
+      (lab_label_of_genome (ucsc_reference_genome ~release ~species))
+  in
+  Bistro_unix.wget url
