@@ -2,4 +2,5 @@
   (name biotope_light)
   (public_name biotope.light)
   (libraries biocaml.unix biotk biotope core_kernel)
+  (optional)
   (preprocess (pps bistro.ppx ppx_jane)))
