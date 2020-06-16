@@ -1,5 +1,12 @@
+val configure :
+  ?np:int ->
+  ?mem:int ->
+  unit ->
+  unit
+
 module Text : sig
   type t
+  val eval : t -> string
 end
 
 module File : sig

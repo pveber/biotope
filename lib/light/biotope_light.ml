@@ -2,13 +2,52 @@ open Core_kernel
 open Bistro
 open Biotope
 
+module type Toplevel = sig
+  val eval : 'a workflow -> 'a
+end
+
+let toplevel_np = ref 1
+let toplevel_mem = ref 1
+
+let toplevel : (module Toplevel) option ref = ref None
+
+let init_module () =
+  let module E = Bistro_utils.Toplevel_eval.Make(struct
+                     let np = !toplevel_np
+                     let mem = !toplevel_mem
+                   end)()
+  in
+  toplevel := Some (module E : Toplevel) ;
+  (module E : Toplevel)
+
+let configure ?np ?mem () =
+  Option.iter np ~f:(( := ) toplevel_np) ;
+  Option.iter mem ~f:(( := ) toplevel_mem) ;
+  ignore (init_module () : (module Toplevel))
+
+let eval w =
+  let (module E) =
+    match !toplevel with
+    | None -> init_module ()
+    | Some m -> m
+  in
+  E.eval w
+
+let unsafe_file_of_url url : 'a file =
+  if    String.is_prefix ~prefix:"http://" url
+     || String.is_prefix ~prefix:"ftp://" url
+  then Bistro_unix.wget url
+  else Workflow.input url
+
 module Text = struct
   type t = string workflow
+
+  let eval = eval
 end
 
 module File = struct
   type t = regular_file_t file
-  let input x = Workflow.input x
+  let input x = unsafe_file_of_url x
 
   module Summary = struct
     type t = {
@@ -79,7 +118,7 @@ module Fastq = struct
     | Gziped of fastq gz file SE_or_PE.t
 
   let se_or_pe_input x =
-    SE_or_PE.map x ~f:Workflow.input
+    SE_or_PE.map x ~f:unsafe_file_of_url
 
   let input gziped path =
     if gziped then Gziped (se_or_pe_input path)
