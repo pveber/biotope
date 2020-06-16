@@ -40,6 +40,12 @@ module Markdown : sig
   (* val render : t -> Html.t *)
 end
 
+module Fasta : sig
+  type t
+  val input : ?gziped:bool -> string -> t
+  val concat : t list -> t
+end
+
 module Fastq : sig
   type t
   val single_end_input :
@@ -54,6 +60,16 @@ module Fastq : sig
   val summary : t -> Text.t
 end
 
+module Ensembl : sig
+  type species
+  val mus_musculus : species
+
+  val dna :
+    release:int ->
+    species:species ->
+    Fasta.t
+end
+
 module Sra_toolkit : sig
   val fastq_dump : id:string -> paired:bool -> Fastq.t
 end
@@ -64,8 +80,20 @@ module FastQC : sig
   val html_report : t -> Html.t * Html.t option
 end
 
-val set_np : int -> unit
-val set_mem : int -> unit
+module Kallisto : sig
+  type index
+  type abundance_table
 
-val eval_text : Text.t -> string
-val browse_html : Html.t -> unit
+  val index : Fasta.t -> index
+  val quant :
+    ?bias:bool ->
+    ?bootstrap_samples:int ->
+    ?fr_stranded:bool ->
+    ?rf_stranded:bool ->
+    ?threads:int ->
+    ?fragment_length:float ->
+    ?sd:float ->
+    index ->
+    Fastq.t ->
+    abundance_table
+end

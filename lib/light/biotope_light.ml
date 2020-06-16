@@ -86,7 +86,7 @@ module Html = struct
   let text s = Text s
   let svg x = Svg x
 
-  let render = function
+  let _render = function
     | Workflow w -> w
     | Elements (title, elts) ->
       let open Bistro_utils.Html_report in
@@ -170,7 +170,35 @@ module Fastq = struct
           else
             sprintf "number_of_reads differ in R1 and R2: %d, %d" r1.nb_reads r2.nb_reads
         )]
+end
 
+module Fasta = struct
+  type t =
+    | Plain of fasta file
+    | Gziped of fasta gz file
+
+  let input ?(gziped = false) path_or_url =
+    let k () = unsafe_file_of_url path_or_url in
+    if gziped then Gziped (k ())
+    else Plain (k ())
+
+  let concat xs =
+    Gziped (
+        List.map xs ~f:(function
+            | Plain fa -> `plain fa
+            | Gziped fa_gz -> `gziped fa_gz
+          )
+        |> Fasta.concat_gz
+      )
+end
+
+module Ensembl = struct
+  type species = Ensembl.species
+
+  let mus_musculus = `mus_musculus
+
+  let dna ~release ~species =
+    Fasta.Gziped (Ensembl.dna ~release ~species)
 end
 
 module Sra_toolkit = struct
@@ -197,27 +225,29 @@ module FastQC = struct
       Some (Html.Workflow (FastQC.html_report r2))
 end
 
-let np = ref 1
-let mem = ref 1
+module Kallisto = struct
+  type index = Kallisto.index file
+  type abundance_table = Kallisto.abundance_table file
 
-let set_np i = np := i
-let set_mem m = mem := m
+  let index (fa : Fasta.t) =
+    Kallisto.index [
+        match fa with
+        | Plain fa -> fa
+        | Gziped fa_gz -> Bistro_unix.gunzip fa_gz
+      ]
 
-let eval w =
-  let module E = Bistro_utils.Toplevel_eval.Make(struct
-      let np = !np
-      let mem = !mem
-    end)()
-  in
-  E.eval w
-
-let firefox w =
-  let module E = Bistro_utils.Toplevel_eval.Make(struct
-      let np = !np
-      let mem = !mem
-    end)()
-  in
-  E.firefox w
-
-let eval_text = eval
-let browse_html x = firefox (Html.render x)
+  let quant ?bias ?bootstrap_samples ?fr_stranded ?rf_stranded ?threads ?fragment_length ?sd index (fq : Fastq.t) =
+    let fq1, fq2 =
+      match fq with
+       | Plain (Single_end fq) -> `fq fq, None
+       | Plain (Paired_end (fq1, fq2)) -> `fq fq1, Some (`fq fq2)
+       | Gziped (Single_end fq_gz) -> `fq_gz fq_gz, None
+       | Gziped (Paired_end (fq1_gz, fq2_gz)) ->
+          `fq_gz fq1_gz, Some (`fq_gz fq2_gz)
+    in
+    Kallisto.quant
+      ?bias ?bootstrap_samples ?fr_stranded ?rf_stranded ?threads ?fragment_length ?sd
+      index ~fq1 ?fq2
+      ()
+    |> Kallisto.abundance
+end
