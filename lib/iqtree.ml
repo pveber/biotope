@@ -258,27 +258,25 @@ let iqtree ?t ?te ?o ?(nt = 1) ?seed ?n ?m ?z ?st ?spp ali =
     | `phylip f -> dep f
     | `fasta f -> dep f
   in
-  Workflow.shell ~descr:"iqtree" ~np:nt [
+  Workflow.shell ~descr:"iqtree" ~np:nt ~img [
     mkdir_p dest ;
-    within_container img (
-      and_list [
-        cmd ~img "/usr/local/bin/iqtree" [
-          opt "-s" Fn.id ali_dep ;
-          option (opt "-t" tree_token) t ;
-          option (opt "-te" dep) te ;
-          option (opt "-o" string) o ;
-          opt "-pre" Fn.id (dest // "iqtree") ;
-          opt "-nt" Fn.id np ;
-          option (opt "-seed" int) seed ;
-          option (opt "-n" int) n ;
-          option (opt "-m" model_spec_token) m ;
-          option (opt "-z" dep) z ;
-          option (opt "-st" sequence_type_token) st ;
-          option (opt "-spp" dep) spp ;
-        ] ;
+    and_list [
+        cmd "/usr/local/bin/iqtree" [
+            opt "-s" Fn.id ali_dep ;
+            option (opt "-t" tree_token) t ;
+            option (opt "-te" dep) te ;
+            option (opt "-o" string) o ;
+            opt "-pre" Fn.id (dest // "iqtree") ;
+            opt "-nt" Fn.id np ;
+            option (opt "-seed" int) seed ;
+            option (opt "-n" int) n ;
+            option (opt "-m" model_spec_token) m ;
+            option (opt "-z" dep) z ;
+            option (opt "-st" sequence_type_token) st ;
+            option (opt "-spp" dep) spp ;
+          ] ;
       ]
-    )
-  ]
+    ]
 
 let treefile dir =
   Workflow.select dir ["iqtree.treefile"]

@@ -8,7 +8,7 @@ let img = [ docker_image ~account:"pveber" ~name:"fastqc" ~tag:"0.11.8" () ]
 module Cmd = struct
   let fastqc x = [
     mkdir_p dest ;
-    cmd "fastqc" ~img [
+    cmd "fastqc" [
       seq ~sep:"" [ string "--outdir=" ; dest ] ;
       (
         match x with
@@ -24,9 +24,9 @@ module Cmd = struct
   ]
 end
 
-let fastqc fq = Workflow.shell ~descr:"fastQC" (Cmd.fastqc (`fq fq))
+let fastqc fq = Workflow.shell ~descr:"fastQC" ~img (Cmd.fastqc (`fq fq))
 
-let fastqc_gz fq_gz = Workflow.shell ~descr:"fastQC" (Cmd.fastqc (`fq_gz fq_gz))
+let fastqc_gz fq_gz = Workflow.shell ~descr:"fastQC" ~img (Cmd.fastqc (`fq_gz fq_gz))
 
 let html_report x = Workflow.select x ["fastqc_report.html"]
 

@@ -24,9 +24,9 @@ let merge ?(min_length = 100) xs =
       |> seq ~sep:""
     )
   in
-  Workflow.shell ~descr:"cisa.Merge" [
+  Workflow.shell ~descr:"cisa.Merge" ~img [
     mkdir_p tmp ;
-    cmd "Merge.py" ~img [ config_file ] ;
+    cmd "Merge.py" [ config_file ] ;
   ]
 
 let cisa ~genome_size contigs =
@@ -64,7 +64,7 @@ yes | CISA.py $CONFIG
       ]
     )
   in
-  Workflow.shell ~descr:"cisa" [
+  Workflow.shell ~descr:"cisa" ~img [
     mkdir_p tmp ;
-    cmd "bash" ~img [ script ] ;
+    cmd "bash" [ script ] ;
   ]

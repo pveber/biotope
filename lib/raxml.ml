@@ -187,32 +187,28 @@ let hpc
     ?b ?c ?d ?_D_ ?f ?_F_ ?k ?p ?t ?(_T_ = 1)
     ?no_bgfs
     model alignment =
-  Workflow.shell ~descr:"raxmlHPC" ~np:_T_ [
-    within_container img (
+  Workflow.shell ~descr:"raxmlHPC" ~np:_T_ ~img [
       and_list [
-        mkdir_p dest ;
-        cmd "raxmlHPC" [
-          option (opt "-b" int) b ;
-          option (opt "-c" int) c ;
-          option (flag string "-d") d ;
-          option (flag string "-D") _D_ ;
-          option (opt "-f" algorithm_token) f ;
-          option (flag string "-F") _F_ ;
-          option (flag string "-k") k ;
-          opt "-m" model_token model ;
-          opt "-n" string suffix ;
-          option (opt "-p" int) p ;
-          opt "-s" dep alignment ;
-          option (opt "-t" dep) t ;
-          opt "-T" Fn.id np ;
-          opt "-w" Fn.id dest ;
-          option (flag string "--no-bfgs") no_bgfs ;
-
-
+          mkdir_p dest ;
+          cmd "raxmlHPC" [
+              option (opt "-b" int) b ;
+              option (opt "-c" int) c ;
+              option (flag string "-d") d ;
+              option (flag string "-D") _D_ ;
+              option (opt "-f" algorithm_token) f ;
+              option (flag string "-F") _F_ ;
+              option (flag string "-k") k ;
+              opt "-m" model_token model ;
+              opt "-n" string suffix ;
+              option (opt "-p" int) p ;
+              opt "-s" dep alignment ;
+              option (opt "-t" dep) t ;
+              opt "-T" Fn.id np ;
+              opt "-w" Fn.id dest ;
+              option (flag string "--no-bfgs") no_bgfs ;
+            ] ;
         ] ;
-      ]
-    ) ;
-  ]
+    ]
 
 let hpc_fasta = hpc
 let hpc_phylip = hpc

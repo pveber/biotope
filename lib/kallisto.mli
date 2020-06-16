@@ -14,7 +14,7 @@ class type abundance_table = object
   method f5 : [`tpm] * float
 end
 
-val img : Shell_dsl.container_image list
+val img : container_image list
 val index : fasta file list -> index file
 val quant :
   ?bias:bool ->

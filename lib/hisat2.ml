@@ -5,9 +5,9 @@ open Bistro.Shell_dsl
 let img = [ docker_image ~account:"pveber" ~name:"hisat2" ~tag:"2.1.0" () ]
 
 let hisat2_build ?large_index ?noauto ?packed ?bmax ?bmaxdivn ?dcv ?nodc ?noref ?justref ?offrate ?ftabchars ?seed ?cutoff fa =
-  Workflow.shell ~descr:"hisat2-build" ~mem:(Workflow.int (8 * 1024)) ~np:8 [
+  Workflow.shell ~descr:"hisat2-build" ~img ~mem:(Workflow.int (8 * 1024)) ~np:8 [
     mkdir_p dest ;
-    cmd "hisat2-build" ~img [
+    cmd "hisat2-build" [
       option (flag string "--large-index") large_index ;
       option (flag string "--no-auto") noauto ;
       option (flag string "--packed") packed ;
@@ -43,8 +43,8 @@ let hisat2
   =
   let fq_samples = fq :: additional_samples in
   let args = Bowtie.fastq_args `V2 fq_samples in
-  Workflow.shell ~descr:"hisat2" ~mem:(Workflow.int (4 * 1024)) ~np:8 [
-    cmd "hisat2" ~img [
+  Workflow.shell ~descr:"hisat2" ~img ~mem:(Workflow.int (4 * 1024)) ~np:8 [
+    cmd "hisat2" [
       option (opt "--skip" int) skip ;
       option (opt "--qupto" int) qupto ;
       option (opt "--trim5" int) trim5 ;

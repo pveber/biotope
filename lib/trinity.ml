@@ -34,9 +34,9 @@ let trinity ?(mem = 128) ?(threads = 4) ?no_normalize_reads ?run_as_paired
     ?min_kmer_cov ?ss_lib_type
     se_or_pe_fq = 
   let tmp_dest = tmp // "trinity" in
-  Workflow.shell ~descr:"trinity" ~np:threads ~mem:(Workflow.int (mem * 1024)) [
+  Workflow.shell ~descr:"trinity" ~img ~np:threads ~mem:(Workflow.int (mem * 1024)) [
     mkdir_p tmp ;
-    cmd "Trinity" ~img ~stdout:(string "/dev/null")[
+    cmd "Trinity" ~stdout:(string "/dev/null")[
       string "--seqType fq" ;
       fqs_option_template se_or_pe_fq ;
       option (flag string "--no_normalize_reads") no_normalize_reads ;
@@ -47,7 +47,7 @@ let trinity ?(mem = 128) ?(threads = 4) ?no_normalize_reads ?run_as_paired
       opt "--max_memory" ident (seq [ string "$((" ; Bistro.Shell_dsl.mem ; string " / 1024))G" ]) ;
       opt "--output" ident tmp_dest ;
     ] ;
-    cmd "mv" ~img [
+    cmd "mv" [
       tmp_dest // "Trinity.fasta" ;
       dest ;
     ]
@@ -70,8 +70,8 @@ let uniq_count_stats sam =
     |> Samtools.bam_of_sam
     |> Samtools.sort ~on:`name
   in
-  Workflow.shell ~descr:"trinity.uniq_count_stats.pl" [
-    cmd "$TRINITY_HOME/util/SAM_nameSorted_to_uniq_count_stats.pl" ~img ~stdout:dest [
+  Workflow.shell ~descr:"trinity.uniq_count_stats.pl" ~img [
+    cmd "$TRINITY_HOME/util/SAM_nameSorted_to_uniq_count_stats.pl" ~stdout:dest [
       dep sorted_sam ;
     ]
   ]
@@ -105,7 +105,8 @@ let insilico_read_normalization ?(mem = 128) ?pairs_together ?parallel_stats ~ma
     Workflow.shell
       ~descr:"trinity.insilico_read_normalization"
       ~np:32 ~mem:(Workflow.int (mem * 1024))
-      [ within_container img (and_list (trinity_cmd :: post)) ]
+      ~img
+      (trinity_cmd :: post)
   in
   let mv x y = mv (bash_app "readlink" [ tmp // x ]) y in
   match se_or_pe_fq with
@@ -125,8 +126,8 @@ let insilico_read_normalization ?(mem = 128) ?pairs_together ?parallel_stats ~ma
     )
 
 let get_Trinity_gene_to_trans_map fa =
-  Workflow.shell ~descr:"get_Trinity_gene_to_trans_map" [
-    cmd "$TRINITY_HOME/util/support_scripts/get_Trinity_gene_to_trans_map.pl" ~img ~stdout:dest [
+  Workflow.shell ~descr:"get_Trinity_gene_to_trans_map" ~img [
+    cmd "$TRINITY_HOME/util/support_scripts/get_Trinity_gene_to_trans_map.pl" ~stdout:dest [
       dep fa
     ]
   ]

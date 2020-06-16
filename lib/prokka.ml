@@ -12,9 +12,9 @@ let run ?prefix ?addgenes ?locustag ?increment ?gffver ?compliant
     ?centre ?genus ?species ?strain ?plasmid ?kingdom ?gcode ?gram
     ?usegenus ?proteins ?hmms ?metagenome ?rawproduct ?fast ?(threads = 1)
     ?mincontiglen ?evalue ?rfam ?norrna ?notrna ?rnammer fa =
-  Workflow.shell ~descr:"prokka" ~np:threads ~mem:(Workflow.int (3 * 1024)) [
+  Workflow.shell ~descr:"prokka" ~img ~np:threads ~mem:(Workflow.int (3 * 1024)) [
     mkdir_p dest ;
-    cmd "prokka" ~img [
+    cmd "prokka" [
       string "--force" ;
       option (opt "--prefix" string) prefix ;
       option (flag string "--addgenes") addgenes ;

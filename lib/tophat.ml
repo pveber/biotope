@@ -14,8 +14,8 @@ let tophat1 ?color index fqs =
         list dep ~sep:"," fqs2
       ]
   in
-  Workflow.shell ~np:8 ~mem:(Workflow.int (4 * 1024)) ~descr:"tophat" [
-    cmd ~img "tophat" [
+  Workflow.shell ~img ~np:8 ~mem:(Workflow.int (4 * 1024)) ~descr:"tophat" [
+    cmd "tophat" [
       string "--bowtie1" ;
       opt "--num-threads" Fn.id np ;
       option (flag string "--color") color ;
@@ -35,8 +35,8 @@ let tophat2 index fqs =
         list dep ~sep:"," fqs2
       ]
   in
-  Workflow.shell ~np:8 ~mem:(Workflow.int (4 * 1024)) ~descr:"tophat2" [
-    cmd ~img "tophat2" [
+  Workflow.shell ~img ~np:8 ~mem:(Workflow.int (4 * 1024)) ~descr:"tophat2" [
+    cmd "tophat2" [
       opt "--num-threads" Fn.id np ;
       opt "--output-dir" Fn.id dest ;
       seq [ dep index ; string "/index" ] ;

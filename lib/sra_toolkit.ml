@@ -31,7 +31,7 @@ let call ?minReadLen ?defline_seq ?defline_qual ?_N_ ?_X_ se_or_pe output input 
     | SE -> None
     | PE -> Some dest
   in
-  cmd ~img "fastq-dump" ?stdout [
+  cmd "fastq-dump" ?stdout [
     option (opt "-M" int) minReadLen ;
     option (opt "--defline-seq" q) defline_seq ;
     option (opt "--defline-qual" q) defline_qual ;
@@ -60,13 +60,13 @@ let call ?minReadLen ?defline_seq ?defline_qual ?_N_ ?_X_ se_or_pe output input 
 let fastq_dump ?minReadLen ?_N_ ?_X_ ?defline_qual ?defline_seq output input =
   let fastq_dump_call = call ?minReadLen ?_N_ ?_X_ ?defline_seq ?defline_qual in
   let descr = "sratoolkit.fastq_dump" in
-  Workflow.shell ~descr [ fastq_dump_call SE output input ]
+  Workflow.shell ~descr ~img [ fastq_dump_call SE output input ]
 
 let fastq_dump_pe ?minReadLen ?_N_ ?_X_ ?defline_qual ?defline_seq output input =
   let fastq_dump_call = call ?minReadLen ?_N_ ?_X_ ?defline_seq ?defline_qual in
   let descr = "sratoolkit.fastq_dump" in
   let dir =
-    Workflow.shell ~descr [
+    Workflow.shell ~descr ~img [
       mkdir_p dest ;
       fastq_dump_call PE output input ;
       mv (dest // "*_1.fastq") (dest // "reads_1.fastq") ;

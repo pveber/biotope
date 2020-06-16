@@ -162,8 +162,8 @@ let script factors samples =
 
 
 let wrapper factors samples =
-  Workflow.shell ~descr:"deseq2.wrapper" [
-    cmd "Rscript" ~img [ file_dump (script factors samples) ] ;
+  Workflow.shell ~descr:"deseq2.wrapper" ~img [
+    cmd "Rscript" [ file_dump (script factors samples) ] ;
   ]
 
 (*

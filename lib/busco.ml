@@ -150,8 +150,7 @@ let string_of_mode = function
   | `proteins -> "proteins"
 
 let busco ?evalue ?limit ?tarzip ~threads ~mode ~db fa =
-  Workflow.shell ~descr:"busco" ~np:threads [
-    within_container img (
+  Workflow.shell ~descr:"busco" ~img ~np:threads [
       and_list [
         cmd "" [ seq ~sep:"" [ string "export BUSCO_CONFIG_FILE=" ; file_dump config_file ] ] ;
         cmd "run_BUSCO.py" [
@@ -165,5 +164,4 @@ let busco ?evalue ?limit ?tarzip ~threads ~mode ~db fa =
           option (flag string "--tarzip") tarzip ;
         ]
       ]
-    )
   ]

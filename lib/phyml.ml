@@ -62,29 +62,28 @@ let phyml
     ?(branch_length = false) ?(substitution_rate = false) ?(tree_topology = false)
     tree alignment : [`phyml] directory =
   let tmp_ali = tmp // tmp_ali_fn in
-  Workflow.shell ~descr:"phyml" [
-    within_container img (
+  Workflow.shell ~descr:"phyml" ~img [
       and_list [
-        cd tmp ;
-        cmd "ln" [ string "-s" ; dep alignment ; tmp_ali ] ;
-        cmd "phyml" ~img [
-          string "--quiet" ;
-          option (opt "--bootstrap" int) bootstrap ;
-          opt "--inputtree" dep tree;
-          opt "-o" Fn.id (params ~branch_length ~substitution_rate ~tree_topology) ;
-          opt "--input" Fn.id tmp_ali ;
-          option (opt "-f" token_of_frequency_determination) f ;
-          option (opt "--datatype" token_of_datatype) datatype ;
-          option (opt "--model" token_of_model) model ;
-          option (flag string "--rand_start") rand_start ;
-          option (opt "--n_rand_starts" int) n_rand_starts ;
-          option (opt "--r_seed" int) r_seed ;
-        ];
-        rm_rf tmp_ali ;
-        mkdir_p dest ;
-        mv (tmp // "*") dest ;
-      ])
-  ]
+          cd tmp ;
+          cmd "ln" [ string "-s" ; dep alignment ; tmp_ali ] ;
+          cmd "phyml" [
+              string "--quiet" ;
+              option (opt "--bootstrap" int) bootstrap ;
+              opt "--inputtree" dep tree;
+              opt "-o" Fn.id (params ~branch_length ~substitution_rate ~tree_topology) ;
+              opt "--input" Fn.id tmp_ali ;
+              option (opt "-f" token_of_frequency_determination) f ;
+              option (opt "--datatype" token_of_datatype) datatype ;
+              option (opt "--model" token_of_model) model ;
+              option (flag string "--rand_start") rand_start ;
+              option (opt "--n_rand_starts" int) n_rand_starts ;
+              option (opt "--r_seed" int) r_seed ;
+            ];
+          rm_rf tmp_ali ;
+          mkdir_p dest ;
+          mv (tmp // "*") dest ;
+        ]
+    ]
 
 let tree dir =
   Workflow.select dir [tmp_ali_fn ^ "_phyml_tree.txt"]

@@ -12,8 +12,8 @@ let fq2fa ?filter input =
     | `Pe_paired fq ->
       opt "--paired" dep fq
   in
-  Workflow.shell ~descr:"fq2fa" [
-    cmd "fq2fa" ~img [
+  Workflow.shell ~descr:"fq2fa" ~img [
+    cmd "fq2fa" [
       option (flag string "--filter") filter ;
       args ;
       dest ;
@@ -21,9 +21,9 @@ let fq2fa ?filter input =
   ]
 
 let idba_ud ?(mem_spec = 10) fa =
-  Workflow.shell ~np:4 ~mem:(Workflow.int (mem_spec * 1024)) ~descr:"idba_ud" [
+  Workflow.shell ~img ~np:4 ~mem:(Workflow.int (mem_spec * 1024)) ~descr:"idba_ud" [
     mkdir_p dest ;
-    cmd "idba_ud" ~img [
+    cmd "idba_ud" [
       opt "--read" dep fa ;
       opt "--num_threads" Fn.id np ;
       opt "--out" Fn.id dest ;

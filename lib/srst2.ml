@@ -10,7 +10,7 @@ let run_gen_cmd ?mlst_db ?mlst_delimiter ?mlst_definitions
     ?truncation_score_tolerance ?other ?max_unaligned_overlap ?mapq
     ?baseq ?samtools_args ?report_new_consensus
     ?report_all_consensus cmd_name other_args =
-  cmd cmd_name ~img (
+  cmd cmd_name (
     List.append [
       option (opt "--mlst_db" dep) mlst_db ;
       option (opt "--mlst_delimiter" string) mlst_delimiter ;
@@ -42,7 +42,7 @@ let run_se ?mlst_db ?mlst_delimiter ?mlst_definitions
     ?truncation_score_tolerance ?other ?max_unaligned_overlap ?mapq
     ?baseq ?samtools_args ?report_new_consensus
     ?report_all_consensus ?(threads = 1) fq =
-  Workflow.shell ~descr:"srst2" ~np:threads ~mem:(Workflow.int (3 * 1024)) [
+  Workflow.shell ~descr:"srst2" ~img ~np:threads ~mem:(Workflow.int (3 * 1024)) [
     mkdir_p dest ;
     run_gen_cmd "srst2" ?mlst_db ?mlst_delimiter ?mlst_definitions
       ?mlst_max_mismatch ?gene_db ?no_gene_details ?gene_max_mismatch
@@ -62,7 +62,7 @@ let run_pe ?mlst_db ?mlst_delimiter ?mlst_definitions
     ?truncation_score_tolerance ?other ?max_unaligned_overlap ?mapq
     ?baseq ?samtools_args ?report_new_consensus
     ?report_all_consensus ?(threads = 1) fq =
-  Workflow.shell ~descr:"srst2" ~np:threads ~mem:(Workflow.int (3 * 1024)) [
+  Workflow.shell ~descr:"srst2" ~img ~np:threads ~mem:(Workflow.int (3 * 1024)) [
     mkdir_p dest ;
     run_gen_cmd "srst2" ?mlst_db ?mlst_delimiter ?mlst_definitions
       ?mlst_max_mismatch ?gene_db ?no_gene_details ?gene_max_mismatch

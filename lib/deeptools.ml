@@ -60,7 +60,7 @@ let bam_gen_cmd ?outfileformat ?scalefactor ?blacklist
     ?smoothlength ?extendreads ?ignoreduplicates ?minmappingquality
     ?samflaginclude ?samflagexclude ?minfragmentlength ?maxfragmentlength
     cmd_name other_args =
-  cmd cmd_name ~img (
+  cmd cmd_name (
     List.append [
       option (opt "--outFileFormat" file_format_expr) outfileformat ;
       option (opt "--scaleFactor" float) scalefactor ;
@@ -86,7 +86,7 @@ let bamcoverage ?scalefactor ?filterrnastrand ?binsize ?blacklist
     ?skipnoncoveredregions ?smoothlength ?extendreads ?ignoreduplicates
     ?minmappingquality ?centerreads ?samflaginclude ?samflagexclude
     ?minfragmentlength ?maxfragmentlength outfileformat indexed_bam =
-  Workflow.shell ~descr:"bamcoverage" ~np:threads [
+  Workflow.shell ~descr:"bamcoverage" ~img ~np:threads [
     bam_gen_cmd "bamCoverage" ?scalefactor ?blacklist
       ?normalizeUsing ?ignorefornormalization
       ?skipnoncoveredregions ?smoothlength ?extendreads ?ignoreduplicates
@@ -107,7 +107,7 @@ let bamcompare ?scalefactormethod ?samplelength ?numberofsamples
     ?smoothlength ?extendreads ?ignoreduplicates ?minmappingquality
     ?centerreads ?samflaginclude ?samflagexclude ?minfragmentlength
     ?maxfragmentlength outfileformat indexed_bam1 indexed_bam2 =
-  Workflow.shell ~descr:"bamcompare" ~np:threads [
+  Workflow.shell ~descr:"bamcompare" ~img ~np:threads [
     bam_gen_cmd "bamCompare"
       ?scalefactor ?blacklist
       ?normalizeUsing ?ignorefornormalization ?skipnoncoveredregions
@@ -133,8 +133,8 @@ let bamcompare ?scalefactormethod ?samplelength ?numberofsamples
 let bigwigcompare ?scalefactor ?ratio ?pseudocount ?binsize
     ?region ?blacklist ?(threads = 1)
     outfileformat bigwig1 bigwig2 =
-  Workflow.shell ~descr:"bigwigcompare" ~np:threads [
-    cmd "bigwigCompare" ~img [
+  Workflow.shell ~descr:"bigwigcompare" ~img ~np:threads [
+    cmd "bigwigCompare" [
       option (opt "--scaleFactor" float) scalefactor ;
       option (opt "--ratio" ratio_expr) ratio ;
       option (opt "--pseudocount" int) pseudocount ;
@@ -153,7 +153,7 @@ let bigwigcompare ?scalefactor ?ratio ?pseudocount ?binsize
 let multibamsum_gen_cmd ?outrawcounts ?extendreads ?ignoreduplicates
     ?minmappingquality ?centerreads ?samflaginclude ?samflagexclude ?minfragmentlength
     ?maxfragmentlength ?blacklist ?region cmd_name other_args =
-  cmd cmd_name ~img (
+  cmd cmd_name (
     List.append [
       option (opt "--region" string) region ;
       option (flag string "--outRawCounts") outrawcounts ;
@@ -175,7 +175,7 @@ let multibamsummary_bins ?binsize ?distancebetweenbins ?region ?blacklist
     ?(threads = 1) ?outrawcounts ?extendreads ?ignoreduplicates ?minmappingquality
     ?centerreads ?samflaginclude ?samflagexclude ?minfragmentlength
     ?maxfragmentlength indexed_bams =
-  Workflow.shell ~descr:"multibamsummary_bins" ~np:threads [
+  Workflow.shell ~descr:"multibamsummary_bins" ~img ~np:threads [
     multibamsum_gen_cmd "multiBamSummary bins"
       ?region ?blacklist
       ?outrawcounts ?extendreads ?ignoreduplicates ?minmappingquality
@@ -195,7 +195,7 @@ let multibamsummary_bed ?region ?blacklist ?(threads = 1)
     ?centerreads ?samflaginclude ?samflagexclude ?minfragmentlength
     ?maxfragmentlength ?metagene ?transcriptid ?exonid ?transcriptiddesignator bed
     indexed_bams =
-  Workflow.shell ~descr:"multibamsummary_bed" ~np:threads [
+  Workflow.shell ~descr:"multibamsummary_bed" ~img ~np:threads [
     multibamsum_gen_cmd "multiBamSummary BED-file"
       ?region ?blacklist
       ?outrawcounts ?extendreads ?ignoreduplicates ?minmappingquality
@@ -219,9 +219,9 @@ let multibigwigsummary_bed
     ?metagene ?transcriptid ?exonid ?transcriptiddesignator
     bed bigwigs =
   let inner =
-    Workflow.shell ~descr:"multibigwigsummary_bed" ~np:threads [
+    Workflow.shell ~descr:"multibigwigsummary_bed" ~img ~np:threads [
       mkdir_p dest ;
-      cmd "multiBigwigSummary BED-file" ~img [
+      cmd "multiBigwigSummary BED-file" [
         option (opt "--labels" (list string ~sep:" ")) labels ;
         option (opt "--chromosomesToSkip" (list string ~sep:" ")) chromosomesToSkip ;
         option (opt "--region" string) region ;
@@ -312,8 +312,8 @@ let computeMatrix_reference_point
     ?averageTypeBins ?missingDataAsZero ?skipZeros
     ?minThreshold ?maxThreshold ?blackList ?scale
     ?(numberOfProcessors = 1) ~regions ~scores () =
-  Workflow.shell ~descr:"deeptools.computeMatrix_reference_point" ~np:numberOfProcessors [
-    cmd "computeMatrix" ~img [
+  Workflow.shell ~descr:"deeptools.computeMatrix_reference_point" ~img ~np:numberOfProcessors [
+    cmd "computeMatrix" [
       string "reference-point" ;
       option (opt "--referencePoint" reference_point_enum) referencePoint ;
       option (opt "--upstream" int) upstream ;
@@ -346,8 +346,8 @@ let plotHeatmap
     ?yAxisLabel ?yMin ?yMax ?legendLocation ?perGroup
     output_format matrix =
   let tmp_file = tmp // ("file." ^ ext_of_format output_format) in
-  Workflow.shell ~descr:"deeptools.plotHeatmap" [
-    cmd "plotHeatmap" ~img [
+  Workflow.shell ~descr:"deeptools.plotHeatmap" ~img [
+    cmd "plotHeatmap" [
       option (opt "--dpi" int) dpi ;
       option (opt "--kmeans" int) kmeans ;
       option (opt "--hclust" int) hclust ;
@@ -406,8 +406,8 @@ let plotCorrelation
     ?colorMap ?plotNumbers ?log1p
     ~corMethod ~whatToPlot output_format corData
   =
-  Workflow.shell ~descr:"deeptools.plotCorrelation" [
-    cmd "plotCorrelation" ~img [
+  Workflow.shell ~descr:"deeptools.plotCorrelation" ~img [
+    cmd "plotCorrelation" [
       opt "--corData" dep corData ;
       opt "--corMethod" corMethod_enum corMethod ;
       opt "--whatToPlot" whatToPlot_enum whatToPlot ;
@@ -431,8 +431,8 @@ let plotProfile
     ?legendLocation ?perGroup
     output_format matrix
   =
-  Workflow.shell ~descr:"deeptools.plotProfile" [
-    cmd "plotProfile" ~img [
+  Workflow.shell ~descr:"deeptools.plotProfile" ~img [
+    cmd "plotProfile" [
       option (opt "--dpi" int) dpi ;
       option (opt "--kmeans" int) kmeans ;
       option (opt "--hclust" int) hclust ;
@@ -464,8 +464,8 @@ let plotEnrichment
     ?plotWidth ?colors ?numPlotsPerRow ?alpha ?offset ?blackList
     ?(numberOfProcessors = 1) ~bams ~beds output_format
   =
-  Workflow.shell ~np:numberOfProcessors ~descr:"deeptools.plotEnrichment" [
-    cmd "plotEnrichment" ~img [
+  Workflow.shell ~np:numberOfProcessors ~img ~descr:"deeptools.plotEnrichment" [
+    cmd "plotEnrichment" [
       option (opt "--labels" (list ~sep:" " (string % quote ~using:'"'))) labels ;
       option (opt "--regionLabels" (list ~sep:" " (string % quote ~using:'"'))) regionLabels ;
       option (opt "--plotTitle" (string % quote ~using:'"')) plotTitle ;
@@ -492,8 +492,8 @@ let plotFingerprint
     ?blackList ?(numberOfProcessors = 1)
     output_format bams
   =
-  Workflow.shell ~descr:"deeptools.plotFingerprint" ~np:numberOfProcessors [
-    cmd "plotFingerprint" ~img [
+  Workflow.shell ~descr:"deeptools.plotFingerprint" ~img ~np:numberOfProcessors [
+    cmd "plotFingerprint" [
       option (flag string "--extendReads") extendReads ;
       option (flag string "--ignoreDuplicates") ignoreDuplicates ;
       option (opt "--minMappingQuality" int) minMappingQuality ;

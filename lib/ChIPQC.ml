@@ -37,6 +37,6 @@ let rscript sample_sheet =
   ]
 
 let run samples =
-  Workflow.shell ~descr:"ChIPQC" [
-    cmd "Rscript" ~img [ file_dump (rscript (sample_sheet samples)) ] ;
+  Workflow.shell ~descr:"ChIPQC" ~img [
+    cmd "Rscript" [ file_dump (rscript (sample_sheet samples)) ] ;
   ]

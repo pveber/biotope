@@ -61,34 +61,32 @@ let fastq_screen ?bowtie2_opts ?filter ?illumina ?nohits ?pass ?subset
         cmd "ln -s" [ fq2 ; fq_link2 ] ;
       ]
   in
-  Workflow.shell ~descr:"fastq_screen" ~np:threads ~mem:(Workflow.int (3 * 1024)) [
-    mkdir_p dest ;
-    within_container img (
+  Workflow.shell ~descr:"fastq_screen" ~img ~np:threads ~mem:(Workflow.int (3 * 1024)) [
+      mkdir_p dest ;
       pipe (
-        ln_cmd
-        @
-        [
-          cmd "fastq_screen" ~img [
-            string "--aligner bowtie2" ;
-            option (opt "--bowtie2" string) bowtie2_opts ;
-            option (opt "--filter" (filter_expr "")) filter ;
-            option (flag string "--illumina1_3") illumina ;
-            option (flag string "--nohits") nohits ;
-            option (opt "--pass" int) pass ;
-            option (opt "--subset" int) subset ;
-            option (flag string "--tag") tag ;
-            opt "--threads" Fn.id np ;
-            option (opt "--top" top_expr) top ;
-            fq_screen_args ;
-            string "--conf" ; file_dump (configuration genomes) ;
-            opt "--outdir" Fn.id dest ;
-          ]
-        ]
-      )
-    ) ;
-    if lightweight then rm_rf ( dest // "*.fastq" )
-    else cmd "" [] ;
-    mv ( dest // "*_screen.html"  ) ( dest // "report_screen.html") ;
-  ]
+          ln_cmd
+          @
+            [
+              cmd "fastq_screen" [
+                  string "--aligner bowtie2" ;
+                  option (opt "--bowtie2" string) bowtie2_opts ;
+                  option (opt "--filter" (filter_expr "")) filter ;
+                  option (flag string "--illumina1_3") illumina ;
+                  option (flag string "--nohits") nohits ;
+                  option (opt "--pass" int) pass ;
+                  option (opt "--subset" int) subset ;
+                  option (flag string "--tag") tag ;
+                  opt "--threads" Fn.id np ;
+                  option (opt "--top" top_expr) top ;
+                  fq_screen_args ;
+                  string "--conf" ; file_dump (configuration genomes) ;
+                  opt "--outdir" Fn.id dest ;
+                ]
+            ]
+        ) ;
+      if lightweight then rm_rf ( dest // "*.fastq" )
+      else cmd "" [] ;
+      mv ( dest // "*_screen.html"  ) ( dest // "report_screen.html") ;
+    ]
 
 let html_report x = Workflow.select x [ "report_screen.html" ]

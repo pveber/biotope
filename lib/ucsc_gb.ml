@@ -125,8 +125,8 @@ let genome_2bit_sequence org =
 (* (\* let wg_encode_crg_mappability_100 org = wg_encode_crg_mappability 100 org *\) *)
 
 let twoBitToFa twobits bed =
-  Workflow.shell ~descr:"ucsc_gb.twoBitToFa" [
-    cmd ~img "twoBitToFa" [
+  Workflow.shell ~descr:"ucsc_gb.twoBitToFa" ~img [
+    cmd "twoBitToFa" [
       opt' "-bed" dep bed ;
       dep twobits ;
       dest
@@ -165,15 +165,15 @@ let twoBitToFa twobits bed =
 (** {5 Chromosome size and clipping} *)
 
 let fetchChromSizes org =
-  Workflow.shell ~descr:"ucsc_gb.fetchChromSizes" [
-    cmd "fetchChromSizes" ~img ~stdout:dest [
+  Workflow.shell ~descr:"ucsc_gb.fetchChromSizes" ~img [
+    cmd "fetchChromSizes" ~stdout:dest [
       string (string_of_genome org) ;
     ]
   ]
 
 let bedClip org bed =
-  Workflow.shell ~descr:"ucsc_gb.bedClip" [
-    cmd "bedClip -verbose=2" ~img [
+  Workflow.shell ~descr:"ucsc_gb.bedClip" ~img [
+    cmd "bedClip -verbose=2" [
       dep bed ;
       dep org ;
       dest ;
@@ -207,13 +207,13 @@ let bedClip org bed =
 
 let bedGraphToBigWig org bg =
   let tmp = seq [ tmp ; string "/sorted.bedGraph" ] in
-  Workflow.shell ~descr:"bedGraphToBigWig" [
+  Workflow.shell ~descr:"bedGraphToBigWig" ~img [
     cmd "sort" ~stdout:tmp [
       string "-k1,1" ;
       string "-k2,2n" ;
       dep bg ;
     ] ;
-    cmd "bedGraphToBigWig" ~img [
+    cmd "bedGraphToBigWig" [
       tmp ;
       dep (fetchChromSizes org) ;
       dest ;
@@ -229,7 +229,7 @@ let bedToBigBed_command org bed =
       dep bed ;
     ] in
   let bedToBigBed =
-    cmd "bedToBigBed" ~img [
+    cmd "bedToBigBed" [
       tmp ;
       dep (fetchChromSizes org) ;
       dest ;
@@ -241,6 +241,7 @@ let bedToBigBed org =
   let f bed =
     Workflow.shell
       ~descr:"ucsc_gb.bedToBigBed"
+      ~img
       (bedToBigBed_command org bed)
   in
   function
@@ -260,7 +261,7 @@ let bedToBigBed_failsafe org =
         and_list [ test ; touch ] ;
         and_list (bedToBigBed_command org bed) ;
       ] in
-    Workflow.shell [ cmd ]
+    Workflow.shell ~img [ cmd ]
   in
   function
   | `bed3 bed -> f bed
@@ -286,9 +287,9 @@ module Lift_over = struct
 
   let bed ~org_from ~org_to bed =
     let chain_file = chain_file ~org_from ~org_to in
-    Workflow.shell ~descr:"ucsc.liftOver" [
+    Workflow.shell ~descr:"ucsc.liftOver" ~img [
       mkdir_p dest ;
-      cmd "liftOver" ~img [
+      cmd "liftOver" [
         dep bed ;
         dep chain_file ;
         dest // "mapped.bed" ;

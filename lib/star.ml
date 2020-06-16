@@ -7,9 +7,9 @@ let img = [ docker_image ~account:"flemoine" ~name:"star" () ]
 let mem_in_bytes = seq ~sep:" " [string "$((" ; mem ; string " * 1024 * 1024))$"]
 
 let genomeGenerate fa =
-  Workflow.shell ~descr:"star.index" ~np:8 ~mem:(Workflow.int (30 * 1024)) [
+  Workflow.shell ~img ~descr:"star.index" ~np:8 ~mem:(Workflow.int (30 * 1024)) [
     mkdir_p dest ;
-    cmd "STAR" ~img [
+    cmd "STAR" [
       opt "--runThreadN" Fn.id np ;
       opt "--runMode" string "genomeGenerate" ;
       opt "--genomeDir" Fn.id dest ;
@@ -37,9 +37,9 @@ let alignReads ?(max_mem = `GB 8)
     ?alignIntronMax
     idx fqs =
   let `GB max_mem = max_mem in
-  Workflow.shell ~descr:"star.map" ~np:8 ~mem:(Workflow.int (max_mem * 1024)) [
+  Workflow.shell ~descr:"star.map" ~img ~np:8 ~mem:(Workflow.int (max_mem * 1024)) [
     mkdir_p dest ;
-    cmd "STAR" ~stdout:(dest // "sorted.bam") ~img [
+    cmd "STAR" ~stdout:(dest // "sorted.bam") [
       opt "--outFileNamePrefix" Fn.id (dest // "star") ;
       opt "--runThreadN" Fn.id np ;
       option (opt "--outSAMstrandField" samStrandField) outSAMstrandField ;

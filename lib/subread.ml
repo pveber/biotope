@@ -28,9 +28,9 @@ let featureCounts
     ?allowMultiOverlap ?fraction
     ?q ?nthreads
     gff mapped_reads =
-  Workflow.shell ~descr:"featureCounts" ~np:(Option.value ~default:1 nthreads) [
+  Workflow.shell ~descr:"featureCounts" ~img ~np:(Option.value ~default:1 nthreads) [
     mkdir_p dest ;
-    cmd "featureCounts" ~img [
+    cmd "featureCounts" [
       option (opt "-t" string) feature_type ;
       option (opt "-g" string) attribute_type ;
       option (opt "-s" strandness_token) strandness ;

@@ -37,9 +37,9 @@ let run ?control ?petdist ?gsize ?tsize ?bw ?pvalue ?mfold ?nolambda
     ?slocal ?llocal ?on_auto ?nomodel ?shiftsize ?keep_dup
     ?to_large ?wig ?bdg ?single_profile ?space ?call_subpeaks
     ?diag ?fe_min ?fe_max ?fe_step format treatment =
-  Workflow.shell ~descr:"macs" ~mem:(Workflow.int (3 * 1024)) ~np:8  [
+  Workflow.shell ~descr:"macs" ~mem:(Workflow.int (3 * 1024)) ~img ~np:8  [
     mkdir_p dest ;
-    cmd "macs14" ~img [
+    cmd "macs14" [
       option (opt "--control" (list ~sep:"," dep)) control ;
       opt "--name" seq [ dest ; string "/" ; string name ] ;
       opt "--format" (fun x -> x |> opt_of_format |> string) format ;

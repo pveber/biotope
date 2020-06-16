@@ -40,9 +40,9 @@ let idr
     ~input_file_type ?idr_threshold ?soft_idr_threshold
     ?peak_merge_method ?rank ?random_seed ?peak_list
     sample1 sample2 =
-  Workflow.shell ~descr:"Idr.idr" [
+  Workflow.shell ~descr:"Idr.idr" ~img [
     mkdir_p dest ;
-    cmd "idr" ~img [
+    cmd "idr" [
       opt "--input-file-type" file_format input_file_type ;
       opt "--output-file" (fun x -> x) (dest // "items.tsv") ;
       option (opt "--idr-threshold" float) idr_threshold ;

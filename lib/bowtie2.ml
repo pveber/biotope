@@ -6,9 +6,9 @@ let img = [ docker_image ~account:"pveber" ~name:"bowtie2" ~tag:"2.3.3" () ]
 
 (* memory bound correspond to storing a human index in memory, following bowtie manual *)
 let bowtie2_build ?large_index ?noauto ?packed ?bmax ?bmaxdivn ?dcv ?nodc ?noref ?justref ?offrate ?ftabchars ?seed ?cutoff fa =
-  Workflow.shell ~descr:"bowtie2_build" ~np:8 ~mem:(Workflow.int (3 * 1024)) [
+  Workflow.shell ~descr:"bowtie2_build" ~img ~np:8 ~mem:(Workflow.int (3 * 1024)) [
     mkdir_p dest ;
-    cmd "bowtie2-build" ~img [
+    cmd "bowtie2-build" [
       option (flag string "--large-index") large_index ;
       option (flag string "--no-auto") noauto ;
       option (flag string "--packed") packed ;
@@ -58,8 +58,8 @@ let bowtie2
     ?fastq_format ?(additional_samples = []) index fq_sample =
   let fq_samples = fq_sample :: additional_samples in
   let args = Bowtie.fastq_args `V2 fq_samples in
-  Workflow.shell ~descr:"bowtie2" ~mem:(Workflow.int (3 * 1024)) ~np:8 [
-    cmd "bowtie2" ~img [
+  Workflow.shell ~descr:"bowtie2" ~img ~mem:(Workflow.int (3 * 1024)) ~np:8 [
+    cmd "bowtie2" [
       option (opt "--skip" int) skip ;
       option (opt "--qupto" int) qupto ;
       option (opt "--trim5" int) trim5 ;

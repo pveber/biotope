@@ -6,9 +6,9 @@ let img = [ docker_image ~account:"pveber" ~name:"bowtie" ~tag:"1.1.2" () ]
 
 (* memory bound correspond to storing a human index in memory, following bowtie manual *)
 let bowtie_build ?packed ?color fa =
-  Workflow.shell ~descr:"bowtie_build" ~mem:(Workflow.int (3 * 1024)) [
+  Workflow.shell ~descr:"bowtie_build" ~img ~mem:(Workflow.int (3 * 1024)) [
     mkdir_p dest ;
-    cmd "bowtie-build" ~img [
+    cmd "bowtie-build" [
       option (flag string "-a -p") packed ;
       option (flag string "--color") color ;
       opt "-f" dep fa ;
@@ -46,8 +46,8 @@ let qual_option = function
 let bowtie ?l ?e ?m ?fastq_format ?n ?v ?maxins ?(additional_samples = []) index fq_sample =
   let fq_samples = fq_sample :: additional_samples in
   let fq_args = fastq_args `V1 fq_samples in
-  Workflow.shell ~descr:"bowtie" ~mem:(Workflow.int (3 * 1024)) ~np:8 [
-    cmd "bowtie" ~img [
+  Workflow.shell ~descr:"bowtie" ~img ~mem:(Workflow.int (3 * 1024)) ~np:8 [
+    cmd "bowtie" [
       string "-S" ;
       option (opt "-n" int) n ;
       option (opt "-l" int) l ;

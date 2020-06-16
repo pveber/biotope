@@ -1,6 +1,6 @@
 open Bistro
 
-val img : Shell_dsl.container_image list
+val img : container_image list
 
 class type table = object
   inherit tsv

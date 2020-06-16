@@ -99,24 +99,22 @@ let spades
   =
   let yaml_file = yaml_file samples in
   let ln_commands = renaming_commands_of_fastq_samples samples in
-  Workflow.shell ~np:threads ~mem:(Workflow.int (memory * 1024)) ~descr:"spades" [
-    mkdir_p tmp ;
-    mkdir_p dest ;
-    within_container img (
+  Workflow.shell ~np:threads ~img ~mem:(Workflow.int (memory * 1024)) ~descr:"spades" [
+      mkdir_p tmp ;
+      mkdir_p dest ;
       and_list (
-        ln_commands @ [
-          cmd "spades.py" ~img [
-            option (flag string "--sc") single_cell ;
-            option (flag string "--iontorrent") iontorrent ;
-            opt "--threads" Fn.id np ;
-            opt "--memory" Fn.id (seq [ string "$((" ; mem ; string " / 1024))" ]) ;
-            opt "--dataset" Fn.id (file_dump yaml_file) ;
-            opt "-o" Fn.id dest ;
+          ln_commands @ [
+            cmd "spades.py" [
+                option (flag string "--sc") single_cell ;
+                option (flag string "--iontorrent") iontorrent ;
+                opt "--threads" Fn.id np ;
+                opt "--memory" Fn.id (seq [ string "$((" ; mem ; string " / 1024))" ]) ;
+                opt "--dataset" Fn.id (file_dump yaml_file) ;
+                opt "-o" Fn.id dest ;
+              ]
           ]
-        ]
-      )
-    )
-  ]
+        )
+    ]
 
 let contigs x = Workflow.select x ["contigs.fasta"]
 let scaffolds x = Workflow.select x ["scaffolds.fasta"]
@@ -124,23 +122,21 @@ let scaffolds x = Workflow.select x ["scaffolds.fasta"]
 let rnaspades ?(threads = 4) ?(memory = 10) ?ss samples =
   let yaml_file = yaml_file ?orientation:ss samples in
   let ln_commands = renaming_commands_of_fastq_samples samples in
-  Workflow.shell ~np:threads ~mem:(Workflow.int (memory * 1024)) ~descr:"rnaspades" [
-    mkdir_p tmp ;
-    mkdir_p dest ;
-    within_container img (
+  Workflow.shell ~np:threads ~img ~mem:(Workflow.int (memory * 1024)) ~descr:"rnaspades" [
+      mkdir_p tmp ;
+      mkdir_p dest ;
       and_list (
-        ln_commands @ [
-          cmd "rnaspades.py" ~img [
-            opt "--threads" Fn.id np ;
-            opt "--memory" Fn.id (seq [ string "$((" ; mem ; string " / 1024))" ]) ;
-            option (opt "--ss" strandness) ss ;
-            opt "--dataset" Fn.id (file_dump yaml_file) ;
-            opt "-o" Fn.id dest ;
+          ln_commands @ [
+            cmd "rnaspades.py" [
+                opt "--threads" Fn.id np ;
+                opt "--memory" Fn.id (seq [ string "$((" ; mem ; string " / 1024))" ]) ;
+                option (opt "--ss" strandness) ss ;
+                opt "--dataset" Fn.id (file_dump yaml_file) ;
+                opt "-o" Fn.id dest ;
+              ]
           ]
-        ]
-      )
-    )
-  ]
+        )
+    ]
 
 let transcripts x = Workflow.select x ["transcripts.fasta"]
 let hard_filtered_transcripts x = Workflow.select x ["hard_filtered_transcripts.fasta"]

@@ -19,8 +19,8 @@ end
 let img = [ docker_image ~account:"pveber" ~name:"kallisto" ~tag:"0.43.0" () ]
 
 let index fas =
-  Workflow.shell ~descr:"kallisto-index" [
-    cmd "kallisto index" ~img [
+  Workflow.shell ~descr:"kallisto-index" ~img [
+    cmd "kallisto index" [
       opt "-i" Fn.id dest ;
       list ~sep:" " dep fas ;
     ]
@@ -31,8 +31,8 @@ let fq_input = function
   | `fq x -> dep x
 
 let quant ?bias ?bootstrap_samples ?fr_stranded ?rf_stranded ?threads ?fragment_length ?sd idx ~fq1 ?fq2 () =
-  Workflow.shell ~descr:"kallisto-quant" ?np:threads [
-    cmd "kallisto quant" ~img [
+  Workflow.shell ~descr:"kallisto-quant" ?np:threads ~img [
+    cmd "kallisto quant" [
       option (flag string "--bias") bias ;
       option (flag string "--fr-stranded") fr_stranded ;
       option (flag string "--rf-stranded") rf_stranded ;

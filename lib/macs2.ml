@@ -5,10 +5,10 @@ open Bistro.Shell_dsl
 let img = [ docker_image ~account:"pveber" ~name:"macs2" ~tag:"2.1.1" () ]
 
 let macs2 subcmd opts =
-  cmd "macs2" ~img (string subcmd :: opts)
+  cmd "macs2" (string subcmd :: opts)
 
 let pileup ?extsize ?both_direction bam =
-  Workflow.shell ~descr:"macs2.pileup" [
+  Workflow.shell ~descr:"macs2.pileup" ~img [
     macs2 "pileup" [
       opt "-i" dep bam ;
       opt "-o" Fn.id dest ;
@@ -52,7 +52,7 @@ let keep_dup_expr = function
 let callpeak_gen
     ?broad ?pvalue ?qvalue ?gsize ?call_summits
     ?fix_bimodal ?mfold ?extsize ?nomodel ?bdg ?control ?keep_dup format treatment =
-  Workflow.shell ~descr:"macs2.callpeak" [
+  Workflow.shell ~descr:"macs2.callpeak" ~img [
     macs2 "callpeak" [
       option (flag string "--broad") broad ;
       opt "--outdir" Fn.id dest ;
