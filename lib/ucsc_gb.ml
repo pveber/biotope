@@ -133,14 +133,13 @@ let twoBitToFa twobits bed =
     ]
   ]
 
-(* let fasta_of_bed org bed = *)
-(*   twoBitToFa bed (genome_2bit_sequence org) *)
-
-(* (\*   f2 *\) *)
-(* (\*     "guizmin.bioinfo.ucsc.fasta_of_bed[1]" [] *\) *)
-(* (\*     seq2b bed *\) *)
-(* (\*     (fun env (File seq2b) (File bed) path -> *\) *)
-(* (\*       twoBitToFa ~positions:(`bed bed) ~seq2b ~fa:path) *\) *)
+let faToTwoBit fa =
+  Workflow.shell ~descr:"ucsc_gb.faToTwoBit" ~img [
+    cmd "faToTwoBit" [
+      dep fa ;
+      dest
+    ]
+  ]
 
 (* (\* let fetch_sequences (File seq2b) locations = *\) *)
 (* (\*   let open Core_kernel in *\) *)

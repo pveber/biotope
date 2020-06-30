@@ -47,7 +47,7 @@ val chromosome_sequences : [< genome] -> [`ucsc_chromosome_sequences] directory
 val genome_sequence : [< genome] -> fasta file
 val genome_2bit_sequence : [< genome] -> twobit file
 val twoBitToFa : twobit file -> #bed4 file -> fasta file
-
+val faToTwoBit : fasta file -> twobit file
 
 (** {4 Chromosome size and clipping} *)
 val fetchChromSizes : [< genome] -> chrom_sizes file
