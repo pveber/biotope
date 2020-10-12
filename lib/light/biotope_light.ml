@@ -51,13 +51,13 @@ module File = struct
 
   module Summary = struct
     type t = {
-      size : int ;
+      size : int64 ;
     }
     let make fn =
-      let size = (Unix.stat fn).st_size in
+      let size = (Core.Unix.stat fn).st_size in
       { size }
     let to_string s =
-      sprintf "Size: %d" s.size
+      sprintf "Size: %Ld" s.size
   end
 
   let summary file = [%workflow
