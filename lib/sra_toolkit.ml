@@ -20,7 +20,9 @@ let sra_of_input = function
   | `idw w -> string_dep w
   | `file w -> dep w
 
-let q s = quote ~using:'\'' (string s)
+(*let q s = quote ~using:'\"' (string s)*)
+
+let protect s = quote ~using:'\"' (string (Str.global_replace (Str.regexp_string "$") "\\$" s))
 
 let call ?minReadLen ?defline_seq ?defline_qual ?_N_ ?_X_ se_or_pe output input =
   let stdout = match se_or_pe with
@@ -33,12 +35,16 @@ let call ?minReadLen ?defline_seq ?defline_qual ?_N_ ?_X_ se_or_pe output input 
   in
   cmd "fastq-dump" ?stdout [
     option (opt "-M" int) minReadLen ;
-    option (opt "--defline-seq" q) defline_seq ;
-    option (opt "--defline-qual" q) defline_qual ;
+    option (opt "--defline-seq" protect) defline_seq ;
+    option (opt "--defline-qual" protect) defline_qual ;
     option (opt "-N" int) _N_ ;
     option (opt "-X" int) _X_ ;
     option (opt "-O" Fn.id) _O_ ;
-    string "-Z" ;
+    option string (
+      match se_or_pe with
+      | SE -> Some "-Z"
+      | PE -> None
+    ) ;
     option string (
       match output with
       | Fasta -> Some "--fasta"
@@ -62,16 +68,22 @@ let fastq_dump ?minReadLen ?_N_ ?_X_ ?defline_qual ?defline_seq output input =
   let descr = "sratoolkit.fastq_dump" in
   Workflow.shell ~descr ~img [ fastq_dump_call SE output input ]
 
+let ext_output = function
+  | Fasta -> "fasta"
+  | Fastq -> "fastq"
+  | Fastq_gz -> "fastq.gz"
+
 let fastq_dump_pe ?minReadLen ?_N_ ?_X_ ?defline_qual ?defline_seq output input =
   let fastq_dump_call = call ?minReadLen ?_N_ ?_X_ ?defline_seq ?defline_qual in
+  let ext = ext_output output in
   let descr = "sratoolkit.fastq_dump" in
   let dir =
     Workflow.shell ~descr ~img [
       mkdir_p dest ;
       fastq_dump_call PE output input ;
-      mv (dest // "*_1.fastq") (dest // "reads_1.fastq") ;
-      mv (dest // "*_2.fastq") (dest // "reads_2.fastq") ;
+      mv (dest // ("*_1."^ext)) (dest // ("reads_1."^ext)) ;
+      mv (dest // ("*_2."^ext)) (dest // ("reads_2."^ext)) ;
     ]
   in
-  Workflow.select dir ["reads_1.fastq"],
-  Workflow.select dir ["reads_2.fastq"]
+  Workflow.select dir ["reads_1."^ext],
+  Workflow.select dir ["reads_2."^ext]
